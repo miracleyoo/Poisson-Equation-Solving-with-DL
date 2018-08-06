@@ -18,11 +18,10 @@ class Config(object):
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1
         self.NUM_EPOCHS          = 50
-        self.BATCH_SIZE          = 1
-        self.TEST_BATCH_SIZE     = 8
-        self.NUM_WORKERS         = 4
-        self.NUM_CLASSES         = 8
+        self.BATCH_SIZE          = 2
+        self.TEST_BATCH_SIZE     = 1
+        self.NUM_WORKERS         = 1
+        self.NUM_CLASSES         = 369
         self.LEARNING_RATE       = 0.001
-        self.PRINT_BATCH         = True
-        self.NUM_PRINT_BATCH     = 5
+        self.LINER_HID_SIZE      = 1024
 

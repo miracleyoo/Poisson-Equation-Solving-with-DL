@@ -10,7 +10,7 @@ from torch.autograd import Variable
 from tqdm import tqdm
 
 
-def training(opt, train_loader, test_loader, net, class_names):
+def training(opt, train_loader, test_loader, net):
     top_num= opt.TOP_NUM
     criterion = nn.BCEWithLogitsLoss(size_average=False)
     NUM_TRAIN_PER_EPOCH = len(train_loader)
@@ -37,17 +37,17 @@ def training(opt, train_loader, test_loader, net, class_names):
 
         print('==> Preparing Data ...')
         for i, data in tqdm(enumerate(train_loader), desc="Training", total=NUM_TRAIN_PER_EPOCH, leave=False, unit='b'):
-            [cos_inputs, ani_inputs] , labels, *_ = data
+            inputs, labels, *_ = data
             if opt.USE_CUDA:
-                cos_inputs, ani_inputs, labels = Variable(cos_inputs.cuda()), Variable(ani_inputs.cuda()), Variable(labels.cuda())
+                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
             else:
-                cos_inputs, ani_inputs, labels = Variable(cos_inputs), Variable(ani_inputs), Variable(labels)
+                inputs, labels = Variable(inputs), Variable(labels)
 
             # zero the parameter gradients
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(cos_inputs, ani_inputs)
+            outputs = net(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -102,15 +102,14 @@ def testing(opt, test_loader, net):
     criterion = nn.BCEWithLogitsLoss(size_average=False)
 
     for i, data in tqdm(enumerate(test_loader), desc="Testing", total=len(test_loader), leave=False, unit='b'):
-        [cos_inputs, ani_inputs], labels, *_ = data
+        inputs, labels, *_ = data
         if opt.USE_CUDA:
-            cos_inputs, ani_inputs, labels = Variable(cos_inputs.cuda()), Variable(ani_inputs.cuda()), Variable(
-                labels.cuda())
+            inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
         else:
-            cos_inputs, ani_inputs, labels = Variable(cos_inputs), Variable(ani_inputs), Variable(labels)
+            inputs, labels = Variable(inputs), Variable(labels)
 
         # Compute the outputs and judge correct
-        outputs = net(cos_inputs, ani_inputs)
+        outputs = net(inputs)
 
         loss = criterion(outputs, labels)
         predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
