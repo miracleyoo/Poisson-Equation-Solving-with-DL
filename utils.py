@@ -50,4 +50,3 @@ def folder_init(opt):
     if not os.path.exists('source'): os.mkdir('source')
     if not os.path.exists('source/reference'): os.mkdir('source/reference')
     if not os.path.exists(opt.NET_SAVE_PATH): os.mkdir(opt.NET_SAVE_PATH)
-    if not os.path.exists(opt.NET_SAVE_PATH + opt.DATASET_PATH): os.mkdir(opt.NET_SAVE_PATH + opt.DATASET_PATH)
