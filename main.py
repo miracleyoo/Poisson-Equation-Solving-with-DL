@@ -11,22 +11,6 @@ from models import miracle_net
 
 opt = Config()
 
-transform_train = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.Resize((opt.PIC_SIZE, opt.PIC_SIZE)),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(degrees=5),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-])
-
-transform_test = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.Resize((opt.PIC_SIZE, opt.PIC_SIZE)),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-])
-
 folder_init(opt)
 # gen_name(opt)
 train_pairs, test_pairs = load_data('./TempData/')

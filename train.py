@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 def training(opt, train_loader, test_loader, net):
     top_num= opt.TOP_NUM
-    criterion = nn.BCEWithLogitsLoss(size_average=False)
+    criterion = nn.CrossEntropyLoss()
     NUM_TRAIN_PER_EPOCH = len(train_loader)
 
     print('==> Loading Model ...')
