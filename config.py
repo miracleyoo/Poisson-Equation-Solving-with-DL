@@ -10,7 +10,6 @@ class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
         self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.DATASET_PATH        = "both"
         self.TRAINDATARATIO      = 0.7
         self.RE_TRAIN            = False
         self.PIC_SIZE            = 256

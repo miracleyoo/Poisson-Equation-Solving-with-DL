@@ -10,14 +10,18 @@ from torch.autograd import Variable
 from tqdm import tqdm
 
 
+def cross_entropy(pred, soft_targets):
+    logsoftmax = nn.LogSoftmax()
+    return torch.mean(torch.sum(- soft_targets * logsoftmax(pred), 1))
+
 def training(opt, train_loader, test_loader, net):
     top_num= opt.TOP_NUM
     criterion = nn.CrossEntropyLoss()
     NUM_TRAIN_PER_EPOCH = len(train_loader)
 
     print('==> Loading Model ...')
-    temp_model_name = opt.NET_SAVE_PATH + opt.DATASET_PATH + '%s_model_temp.pkl' % net.__class__.__name__
-    model_name = opt.NET_SAVE_PATH + opt.DATASET_PATH + '%s_model.pkl' % net.__class__.__name__
+    temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
+    model_name = opt.NET_SAVE_PATH + '%s_model.pkl' % net.__class__.__name__
     if os.path.exists(temp_model_name) and not opt.RE_TRAIN:
         net = torch.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)
@@ -48,7 +52,9 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
-            loss = criterion(outputs, labels)
+            loss = cross_entropy(outputs, labels)
+
+            # loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
