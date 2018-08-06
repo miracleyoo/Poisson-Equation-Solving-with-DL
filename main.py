@@ -29,7 +29,7 @@ transform_test = transforms.Compose([
 
 folder_init(opt)
 # gen_name(opt)
-train_pairs, test_pairs = load_data()
+train_pairs, test_pairs = load_data('./TempData/')
 
 trainDataset = POISSON(train_pairs, opt)
 train_loader = DataLoader(dataset=trainDataset, batch_size=opt.BATCH_SIZE, shuffle=True, num_workers=opt.NUM_WORKERS, drop_last=False)
