@@ -1,8 +1,8 @@
 # coding: utf-8
+# Author: Zhongyang Zhang
+
 import torch
 from torch.utils.data import Dataset
-from PIL import Image
-import numpy as np
 
 class POISSON(Dataset):
     def __init__(self, data, opt):

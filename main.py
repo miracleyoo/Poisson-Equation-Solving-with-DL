@@ -1,6 +1,5 @@
 # coding: utf-8
-import torchvision.transforms as transforms
-import torchvision.models as models
+# Author: Zhongyang Zhang
 
 from torch.utils.data import DataLoader
 from utils import *
@@ -12,7 +11,6 @@ from models import miracle_net
 opt = Config()
 
 folder_init(opt)
-# gen_name(opt)
 train_pairs, test_pairs = load_data('./TempData/')
 
 trainDataset = POISSON(train_pairs, opt)

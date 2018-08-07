@@ -1,5 +1,6 @@
 # coding: utf-8
-# Author: Miracle Yoo
+# Author: Zhongyang Zhang
+
 import torch
 import torch.nn as nn
 import torch.optim as optim

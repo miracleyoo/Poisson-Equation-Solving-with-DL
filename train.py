@@ -1,14 +1,14 @@
 # coding: utf-8
+# Author: Zhongyang Zhang
+
 import torch
 import torch.nn as nn
 import torch.autograd
 import os
-import math
-import json
-import datetime
 import numpy as np
 from torch.autograd import Variable
 from tqdm import tqdm
+from tensorboardX import SummaryWriter
 
 
 def cross_entropy(pred, soft_targets):
@@ -17,33 +17,45 @@ def cross_entropy(pred, soft_targets):
 
 
 def vec_similarity(A, B):
-    return (torch.sum(torch.pow(A-B, 2))).sqrt()
+    return (torch.sum(torch.pow(A - B, 2))).sqrt()
 
 
-def border_loss(A, B, opt, is_training=True):
+def border_loss(A, B, opt):
     batch = len(A)
-    vec_sim = (torch.sum(torch.pow(A-B, 2))).sqrt()
-    std = Variable(torch.Tensor(np.zeros([batch, opt.LENGTH,opt.WIDTH])))
+    vec_sim = (torch.sum(torch.pow(A - B, 2))).sqrt()
+    std = Variable(torch.Tensor(np.zeros([batch, opt.LENGTH, opt.WIDTH])))
     std[:, 0, :] = 1
     std[:, -1, :] = 1
+    if opt.USE_CUDA: std = std.cuda()
     A = A.resize(batch, opt.LENGTH, opt.WIDTH)
     B = B.resize(batch, opt.LENGTH, opt.WIDTH)
-    A_bor = A*std
-    B_bor = B*std
-    return vec_sim + 2*(torch.sum(torch.pow(A_bor-B_bor, 2))).sqrt()
+    A_bor = A * std
+    B_bor = B * std
+    return vec_sim + 2 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
 
 
 def training(opt, train_loader, test_loader, net):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
-
+    best_loss = 100
+    PRE_EPOCH = 0
     print('==> Loading Model ...')
 
-    temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
-    if os.path.exists(temp_model_name) and not opt.RE_TRAIN:
-        net = torch.load(temp_model_name)
+    NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
+    temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"
+    # temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
+    # best_model_name = opt.NET_SAVE_PATH + '%s_model_best.pkl' % net.__class__.__name__
+    if not os.path.exists(NET_SAVE_PREFIX):
+        os.mkdir(NET_SAVE_PREFIX)
+    if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
+        # net = torch.load(temp_model_name)
+        net, PRE_EPOCH, best_loss = net.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)
 
-    if opt.USE_CUDA: net.cuda();print("==> Using CUDA.")
+    if opt.USE_CUDA:
+        net.cuda()
+        print("==> Using CUDA.")
+
+    writer = SummaryWriter(opt.SUMMARY_PATH)
 
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
 
@@ -66,7 +78,7 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
-            loss = border_loss(outputs, labels, opt, is_training=True)
+            loss = border_loss(outputs, labels, opt)
 
             # loss = criterion(outputs, labels)
             loss.backward()
@@ -76,16 +88,24 @@ def training(opt, train_loader, test_loader, net):
             train_loss += loss.data[0]
 
         # Save a temp model
-        torch.save(net, temp_model_name)
+        # torch.save(net, temp_model_name)
+        net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
 
         # Start testing
         test_loss = testing(opt, test_loader, net)
 
+        writer.add_scalar("Train/loss", train_loss / opt.NUM_TRAIN, epoch + PRE_EPOCH)
+        writer.add_scalar("Test/loss", test_loss / opt.NUM_TEST, epoch + PRE_EPOCH)
         # Output results
-        print(
-            'Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
-            % (epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
-               test_loss / opt.NUM_TEST, ))
+        print('Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
+            % (PRE_EPOCH + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
+               test_loss / opt.NUM_TEST))
+
+        # Save the best model
+        if test_loss / opt.NUM_TEST < best_loss:
+            best_loss = test_loss / opt.NUM_TEST
+            # torch.save(net, best_model_name)
+            net.save(epoch, train_loss / opt.NUM_TRAIN, "best_model.dat")
 
     print('==> Training Finished.')
     return net
@@ -104,18 +124,7 @@ def testing(opt, test_loader, net):
 
         # Compute the outputs and judge correct
         outputs = net(inputs)
-        loss = border_loss(outputs, labels, opt, is_training=False)
+        loss = border_loss(outputs, labels, opt)
         test_loss += loss.data[0]
 
     return test_loss
-
-
-def output_vector(opt, net, data):
-    net.eval()
-    inputs, labels, *_ = data
-    if opt.USE_CUDA:
-        inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-    else:
-        inputs, labels = Variable(inputs), Variable(labels)
-    outputs = net(inputs)
-    return outputs
