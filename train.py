@@ -20,6 +20,10 @@ def vec_similarity(A, B):
     return (torch.sum(torch.pow(A - B, 2))).sqrt()
 
 
+def vec_dif(A, B):
+    print("Different between preds and labels is:", torch.sum(torch.abs(A-B)).data.tolist()[0]/len(A))
+
+
 def border_loss(A, B, opt):
     batch = len(A)
     vec_sim = (torch.sum(torch.pow(A - B, 2))).sqrt()
@@ -100,6 +104,7 @@ def training(opt, train_loader, test_loader, net):
         print('Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
             % (PRE_EPOCH + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
                test_loss / opt.NUM_TEST))
+        vec_dif(outputs, labels)
 
         # Save the best model
         if test_loss / opt.NUM_TEST < best_loss:
