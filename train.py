@@ -59,9 +59,9 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
-            print(type(outputs))
+            # print(type(outputs))
             loss = vec_similarity(outputs, labels)
-            print(type(loss))
+            # print(type(loss))
 
             # loss = criterion(outputs, labels)
             loss.backward()
