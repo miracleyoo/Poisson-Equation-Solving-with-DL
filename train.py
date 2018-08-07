@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.autograd
 import os
+import math
 import json
 import datetime
 import numpy as np
@@ -14,12 +15,18 @@ def cross_entropy(pred, soft_targets):
     logsoftmax = nn.LogSoftmax()
     return torch.mean(torch.sum(- soft_targets * logsoftmax(pred), 1))
 
+
+def vec_similarity(A, B):
+    return math.sqrt(torch.sum(torch.pow(A-B, 2)))
+
+
 def training(opt, train_loader, test_loader, net):
     top_num= opt.TOP_NUM
-    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.CrossEntropyLoss()
     NUM_TRAIN_PER_EPOCH = len(train_loader)
 
     print('==> Loading Model ...')
+
     temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
     model_name = opt.NET_SAVE_PATH + '%s_model.pkl' % net.__class__.__name__
     if os.path.exists(temp_model_name) and not opt.RE_TRAIN:
@@ -31,10 +38,10 @@ def training(opt, train_loader, test_loader, net):
     # optimizer = torch.optim.Adam(list(net.fc.parameters()), lr=opt.LEARNING_RATE)
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
 
-    best_test_acc = 0
+    # best_test_acc = 0
     for epoch in range(opt.NUM_EPOCHS):
         train_loss = 0
-        train_acc = 0
+        # train_acc = 0
 
         # Start training
         net.train()
@@ -52,7 +59,7 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
-            loss = cross_entropy(outputs, labels)
+            loss = vec_similarity(outputs, labels)
 
             # loss = criterion(outputs, labels)
             loss.backward()
@@ -60,25 +67,25 @@ def training(opt, train_loader, test_loader, net):
 
             # Do statistics for training
             train_loss += loss.data[0]
-            predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
-            predicts = predicts.data
+            # predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
+            # predicts = predicts.data
+            #
+            # num_correct = 0
 
-            num_correct = 0
+            # if opt.USE_CUDA:
+            #     labels_data = labels.cpu().data.numpy()
+            #     predicts    = predicts.cpu().tolist()
+            # else:
+            #     labels_data = labels.data.numpy()
+            #     predicts = predicts.tolist()
+            #
+            # for i, predict in enumerate(predicts):
+            #     for label in predict:
+            #         if label in list(np.where(labels_data[i] == 1)[0]):
+            #             num_correct += 1
+            #             break
 
-            if opt.USE_CUDA:
-                labels_data = labels.cpu().data.numpy()
-                predicts    = predicts.cpu().tolist()
-            else:
-                labels_data = labels.data.numpy()
-                predicts = predicts.tolist()
-
-            for i, predict in enumerate(predicts):
-                for label in predict:
-                    if label in list(np.where(labels_data[i] == 1)[0]):
-                        num_correct += 1
-                        break
-
-            train_acc += num_correct
+            # train_acc += num_correct
 
         # Save a temp model
         torch.save(net, temp_model_name)
@@ -88,13 +95,12 @@ def training(opt, train_loader, test_loader, net):
 
         # Output results
         print(
-            'Epoch [%d/%d], Train Loss: %.4f, Train Acc: %.4f, Test Loss: %.4f, Test Acc: %.4f, '
-            % (epoch + 1, opt.NUM_EPOCHS,
-               train_loss / opt.NUM_TRAIN, train_acc / opt.NUM_TRAIN,
-               test_loss / opt.NUM_TEST, test_acc / opt.NUM_TEST))
-        if (test_acc / opt.NUM_TEST) > best_test_acc:
-            best_test_acc = test_acc / opt.NUM_TEST
-            torch.save(net, model_name)
+            'Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
+            % (epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
+               test_loss / opt.NUM_TEST, ))
+        # if (test_acc / opt.NUM_TEST) > best_test_acc:
+        #     best_test_acc = test_acc / opt.NUM_TEST
+        #     torch.save(net, model_name)
 
     print('==> Training Finished.')
     return net
@@ -104,7 +110,7 @@ def testing(opt, test_loader, net):
     net.eval()
     top_num = opt.TOP_NUM
     test_loss = 0
-    test_acc  = 0
+    # test_acc  = 0
     criterion = nn.BCEWithLogitsLoss(size_average=False)
 
     for i, data in tqdm(enumerate(test_loader), desc="Testing", total=len(test_loader), leave=False, unit='b'):
@@ -118,28 +124,28 @@ def testing(opt, test_loader, net):
         outputs = net(inputs)
 
         loss = criterion(outputs, labels)
-        predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
-        predicts = predicts.data
-        num_correct = 0
-
-        if opt.USE_CUDA:
-            labels_data = labels.cpu().data.numpy()
-            predicts = predicts.cpu().tolist()
-        else:
-            labels_data = labels.data.numpy()
-            predicts = predicts.tolist()
-
-        for i, predict in enumerate(predicts):
-            for label in predict:
-                if label in list(np.where(labels_data[i]==1)[0]):
-                    num_correct += 1
-                    break
+        # predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
+        # predicts = predicts.data
+        # num_correct = 0
+        #
+        # if opt.USE_CUDA:
+        #     labels_data = labels.cpu().data.numpy()
+        #     predicts = predicts.cpu().tolist()
+        # else:
+        #     labels_data = labels.data.numpy()
+        #     predicts = predicts.tolist()
+        #
+        # for i, predict in enumerate(predicts):
+        #     for label in predict:
+        #         if label in list(np.where(labels_data[i]==1)[0]):
+        #             num_correct += 1
+        #             break
 
         # Do statistics for training
         test_loss += loss.data[0]
-        test_acc += num_correct
+        # test_acc += num_correct
 
-    return test_loss, test_acc
+    return test_loss#, test_acc
 
 
 def output_vector(opt, net, data):
