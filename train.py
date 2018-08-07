@@ -20,28 +20,35 @@ def vec_similarity(A, B):
     return (torch.sum(torch.pow(A-B, 2))).sqrt()
 
 
+def border_loss(A, B, opt, is_training=True):
+    batch = len(A)
+    vec_sim = (torch.sum(torch.pow(A-B, 2))).sqrt()
+    std = Variable(torch.Tensor(np.zeros([batch, opt.LENGTH,opt.WIDTH])))
+    std[:, 0, :] = 1
+    std[:, -1, :] = 1
+    A = A.resize(batch, opt.LENGTH, opt.WIDTH)
+    B = B.resize(batch, opt.LENGTH, opt.WIDTH)
+    A_bor = A*std
+    B_bor = B*std
+    return vec_sim + 2*(torch.sum(torch.pow(A_bor-B_bor, 2))).sqrt()
+
+
 def training(opt, train_loader, test_loader, net):
-    top_num= opt.TOP_NUM
-    # criterion = nn.CrossEntropyLoss()
     NUM_TRAIN_PER_EPOCH = len(train_loader)
 
     print('==> Loading Model ...')
 
     temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
-    model_name = opt.NET_SAVE_PATH + '%s_model.pkl' % net.__class__.__name__
     if os.path.exists(temp_model_name) and not opt.RE_TRAIN:
         net = torch.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)
 
-    if opt.USE_CUDA: net.cuda()
+    if opt.USE_CUDA: net.cuda();print("==> Using CUDA.")
 
-    # optimizer = torch.optim.Adam(list(net.fc.parameters()), lr=opt.LEARNING_RATE)
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
 
-    # best_test_acc = 0
     for epoch in range(opt.NUM_EPOCHS):
         train_loss = 0
-        # train_acc = 0
 
         # Start training
         net.train()
@@ -59,9 +66,7 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
-            # print(type(outputs))
-            loss = vec_similarity(outputs, labels)
-            # print(type(loss))
+            loss = border_loss(outputs, labels, opt, is_training=True)
 
             # loss = criterion(outputs, labels)
             loss.backward()
@@ -69,25 +74,6 @@ def training(opt, train_loader, test_loader, net):
 
             # Do statistics for training
             train_loss += loss.data[0]
-            # predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
-            # predicts = predicts.data
-            #
-            # num_correct = 0
-
-            # if opt.USE_CUDA:
-            #     labels_data = labels.cpu().data.numpy()
-            #     predicts    = predicts.cpu().tolist()
-            # else:
-            #     labels_data = labels.data.numpy()
-            #     predicts = predicts.tolist()
-            #
-            # for i, predict in enumerate(predicts):
-            #     for label in predict:
-            #         if label in list(np.where(labels_data[i] == 1)[0]):
-            #             num_correct += 1
-            #             break
-
-            # train_acc += num_correct
 
         # Save a temp model
         torch.save(net, temp_model_name)
@@ -100,9 +86,6 @@ def training(opt, train_loader, test_loader, net):
             'Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
             % (epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
                test_loss / opt.NUM_TEST, ))
-        # if (test_acc / opt.NUM_TEST) > best_test_acc:
-        #     best_test_acc = test_acc / opt.NUM_TEST
-        #     torch.save(net, model_name)
 
     print('==> Training Finished.')
     return net
@@ -110,10 +93,7 @@ def training(opt, train_loader, test_loader, net):
 
 def testing(opt, test_loader, net):
     net.eval()
-    top_num = opt.TOP_NUM
     test_loss = 0
-    # test_acc  = 0
-    criterion = nn.BCEWithLogitsLoss(size_average=False)
 
     for i, data in tqdm(enumerate(test_loader), desc="Testing", total=len(test_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
@@ -124,30 +104,10 @@ def testing(opt, test_loader, net):
 
         # Compute the outputs and judge correct
         outputs = net(inputs)
-
-        loss = criterion(outputs, labels)
-        # predicts = torch.sort(outputs, descending=True)[1][:, :top_num]
-        # predicts = predicts.data
-        # num_correct = 0
-        #
-        # if opt.USE_CUDA:
-        #     labels_data = labels.cpu().data.numpy()
-        #     predicts = predicts.cpu().tolist()
-        # else:
-        #     labels_data = labels.data.numpy()
-        #     predicts = predicts.tolist()
-        #
-        # for i, predict in enumerate(predicts):
-        #     for label in predict:
-        #         if label in list(np.where(labels_data[i]==1)[0]):
-        #             num_correct += 1
-        #             break
-
-        # Do statistics for training
+        loss = border_loss(outputs, labels, opt, is_training=False)
         test_loss += loss.data[0]
-        # test_acc += num_correct
 
-    return test_loss#, test_acc
+    return test_loss
 
 
 def output_vector(opt, net, data):

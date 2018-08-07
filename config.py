@@ -23,6 +23,8 @@ class Config(object):
         self.NUM_CLASSES         = 369
         self.LEARNING_RATE       = 0.001
         self.LINER_HID_SIZE      = 1024
+        self.LENGTH              = 41
+        self.WIDTH               = 9
 
         self.BATCH_SIZE          = 32
         self.TEST_BATCH_SIZE     = 128
