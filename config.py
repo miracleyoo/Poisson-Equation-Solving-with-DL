@@ -17,10 +17,13 @@ class Config(object):
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1
         self.NUM_EPOCHS          = 50
-        self.BATCH_SIZE          = 32
-        self.TEST_BATCH_SIZE     = 128
-        self.NUM_WORKERS         = 4
+        # self.BATCH_SIZE          = 2
+        # self.TEST_BATCH_SIZE     = 1
+        # self.NUM_WORKERS         = 1
         self.NUM_CLASSES         = 369
         self.LEARNING_RATE       = 0.001
         self.LINER_HID_SIZE      = 1024
 
+        self.BATCH_SIZE          = 32
+        self.TEST_BATCH_SIZE     = 128
+        self.NUM_WORKERS         = 4

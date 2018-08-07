@@ -17,7 +17,7 @@ def cross_entropy(pred, soft_targets):
 
 
 def vec_similarity(A, B):
-    return math.sqrt(torch.sum(torch.pow(A-B, 2)))
+    return (torch.sum(torch.pow(A-B, 2))).sqrt()
 
 
 def training(opt, train_loader, test_loader, net):
@@ -59,7 +59,9 @@ def training(opt, train_loader, test_loader, net):
 
             # forward + backward + optimize
             outputs = net(inputs)
+            print(type(outputs))
             loss = vec_similarity(outputs, labels)
+            print(type(loss))
 
             # loss = criterion(outputs, labels)
             loss.backward()
@@ -91,7 +93,7 @@ def training(opt, train_loader, test_loader, net):
         torch.save(net, temp_model_name)
 
         # Start testing
-        test_loss, test_acc = testing(opt, test_loader, net)
+        test_loss = testing(opt, test_loader, net)
 
         # Output results
         print(
