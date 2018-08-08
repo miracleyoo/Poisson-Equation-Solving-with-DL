@@ -21,7 +21,8 @@ def vec_similarity(A, B):
 
 
 def vec_dif(A, B):
-    print("Different between preds and labels is:", torch.sum(torch.abs(A-B)).data.tolist()[0]/len(A))
+    print("Different between preds and labels is:", torch.mean(torch.abs(A-B)).data.tolist())
+    print('')
 
 
 def border_loss(A, B, opt):
