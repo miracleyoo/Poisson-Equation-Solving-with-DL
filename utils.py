@@ -36,6 +36,23 @@ def load_data(root='./Datasets/'):
     return train_pairs, test_pairs
 
 
+def load_all_data(root='./Datasets/'):
+    """
+    :Outputs:
+        train_pairs : the path of the train  images and their labels' index list
+        test_pairs  : the path of the test   images and their labels' index list
+        class_names : the list of classes' names
+    :param root : the root location of the dataset.
+    """
+    DATA_PATH = root+'all_data.mat'
+    all_data = scipy.io.loadmat(DATA_PATH)
+
+    all_data = dict((key,value) for key,value in all_data.items() if key=='X_all' or key=='Y_all')
+    all_pairs = [(x, y) for x, y in zip(all_data['X_all'], all_data['Y_all'])]
+
+    return all_pairs
+
+
 def folder_init(opt):
     """
     Initialize folders required

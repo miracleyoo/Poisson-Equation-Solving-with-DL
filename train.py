@@ -134,3 +134,28 @@ def testing(opt, test_loader, net):
         test_loss += loss.data[0]
 
     return test_loss
+
+
+def test_all(opt, all_loader, net, results):
+    net.eval()
+    test_loss = 0
+
+    for i, data in tqdm(enumerate(all_loader), desc="Testing", total=len(all_loader), leave=False, unit='b'):
+        inputs, labels, *_ = data
+        if opt.USE_CUDA:
+            inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+        else:
+            inputs, labels = Variable(inputs), Variable(labels)
+
+        # Compute the outputs and judge correct
+        outputs = net(inputs)
+        loss = border_loss(outputs, labels, opt)
+        test_loss += loss.data[0]
+        if opt.USE_CUDA:
+            outputs, labels = outputs.cpu().data.tolist(), labels.cpu().data.tolist()
+        else:
+            outputs, labels = outputs.data.tolist(), labels.data.tolist()
+        results.extend([(label, output) for label, output in zip(labels, outputs)])
+
+    print('==> Testing finished. You can find the result matrix in ./source/val_results/results.pkl')
+    return results
