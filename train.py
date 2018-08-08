@@ -140,6 +140,10 @@ def test_all(opt, all_loader, net, results):
     net.eval()
     test_loss = 0
 
+    if opt.USE_CUDA:
+        net.cuda()
+        print("==> Using CUDA.")
+
     for i, data in tqdm(enumerate(all_loader), desc="Testing", total=len(all_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
         if opt.USE_CUDA:
