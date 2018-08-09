@@ -10,7 +10,7 @@ torch.manual_seed(1)
 
 class MiracleWeightWideNet(BasicModule):
     def __init__(self, opt):
-        super(MiracleWeightWideNet, self).__init__()
+        super(MiracleWeightWideNet, self).__init__(opt)
         self.model_name = "Miracle_Weight_Wide_Net"
         self.weight     = {3: 4, 5: 2, 7: 1, 9: 1}
         init_convs = [nn.Sequential(

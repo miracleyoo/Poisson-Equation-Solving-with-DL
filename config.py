@@ -16,17 +16,14 @@ class Config(object):
         self.MODEL               = 'MiracleLineConvNet'
         self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2-FULL_SET'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
+        self.LOAD_SAVED_MOD      = True
         self.TEST_ALL            = False
         self.TRAINDATARATIO      = 0.7
-        self.LOAD_SAVED_MOD      = True
         self.PIC_SIZE            = 256
         self.NUM_TEST            = 0
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1
         self.NUM_EPOCHS          = 100
-        # self.BATCH_SIZE          = 2
-        # self.TEST_BATCH_SIZE     = 1
-        # self.NUM_WORKERS         = 1
         self.NUM_CLASSES         = 369
         self.LEARNING_RATE       = 0.001
         self.LINER_HID_SIZE      = 1024
@@ -36,3 +33,6 @@ class Config(object):
         self.BATCH_SIZE          = 32
         self.TEST_BATCH_SIZE     = 128
         self.NUM_WORKERS         = 4
+        # self.BATCH_SIZE          = 2
+        # self.TEST_BATCH_SIZE     = 1
+        # self.NUM_WORKERS         = 1

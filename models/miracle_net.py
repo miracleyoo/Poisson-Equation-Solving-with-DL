@@ -10,7 +10,7 @@ torch.manual_seed(1)
 
 class MiracleNet(BasicModule):
     def __init__(self, opt):
-        super(MiracleNet, self).__init__()
+        super(MiracleNet, self).__init__(opt)
         self.model_name = "Miracle_Net"
         self.convs = nn.Sequential(
             nn.Conv2d(2, 128, 3, stride=1, padding=1),

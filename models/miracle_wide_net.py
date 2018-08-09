@@ -10,7 +10,7 @@ torch.manual_seed(1)
 
 class MiracleWideNet(BasicModule):
     def __init__(self, opt):
-        super(MiracleWideNet, self).__init__()
+        super(MiracleWideNet, self).__init__(opt)
         self.model_name = "Miracle_Wide_Net"
 
         init_convs = [nn.Sequential(
