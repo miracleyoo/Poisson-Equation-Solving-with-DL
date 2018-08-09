@@ -23,6 +23,7 @@ def vec_similarity(A, B):
 def vec_dif(A, B):
     print("Different between preds and labels is:", torch.mean(torch.abs(A-B)).data.tolist())
 
+
 def border_loss(A, B, opt):
     batch = len(A)
     vec_sim = (torch.sum(torch.pow(A - B, 2))).sqrt()
@@ -41,7 +42,8 @@ def training(opt, train_loader, test_loader, net):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
     best_loss = 100
     PRE_EPOCH = 0
-    print('==> Loading Model ...')
+    print('==> Now using ')
+    print('==> Loading model ...')
 
     NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
     temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"

@@ -14,7 +14,7 @@ class Config(object):
         self.USE_CUDA            = torch.cuda.is_available()
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.MODEL               = 'MiracleLineConvNet'
-        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2'
+        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2-FULL_SET'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
         self.TEST_ALL            = False
         self.TRAINDATARATIO      = 0.7

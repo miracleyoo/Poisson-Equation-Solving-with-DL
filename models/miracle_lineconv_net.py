@@ -22,8 +22,13 @@ class MiracleLineConvNet(BasicModule):
             nn.MaxPool2d(3, 1, padding=1)
         ) for kernel_size in (3, 5)]
 
-        self.lineconv = nn.Conv2d(in_channels=2, out_channels=32,
-                                  kernel_size=(1, 9), padding=(0, 4))
+        self.lineconv = nn.Sequential(
+            nn.Conv2d(in_channels=2, out_channels=32,
+                    kernel_size=(1, 9), padding=(0, 4)),
+            nn.BatchNorm2d(32),
+            nn.LeakyReLU(),
+            nn.MaxPool2d(3, 1, padding=1)
+        )
         init_convs.append(self.lineconv)
         self.init_convs = nn.ModuleList(init_convs)
 
