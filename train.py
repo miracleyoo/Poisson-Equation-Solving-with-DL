@@ -45,7 +45,7 @@ def training(opt, train_loader, test_loader, net):
     print('==> Now using ')
     print('==> Loading model ...')
 
-    NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
+    NET_SAVE_PREFIX = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
     temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"
     if not os.path.exists(NET_SAVE_PREFIX):
         os.mkdir(NET_SAVE_PREFIX)
