@@ -6,7 +6,7 @@ from utils import *
 from data_loader import *
 from train import *
 from config import Config
-from models import miracle_net, miracle_wide_net
+from models import miracle_net, miracle_wide_net, miracle_weight_wide_net
 import pickle
 
 opt = Config()
@@ -25,7 +25,13 @@ test_loader = DataLoader(dataset=testDataset, batch_size=opt.TEST_BATCH_SIZE, sh
 opt.NUM_TRAIN = len(trainDataset)
 opt.NUM_TEST = len(testDataset)
 
-net = miracle_wide_net.MiracleWideNet(opt)
+if opt.MODEL == 'MiracleWeightWideNet':
+    net = miracle_weight_wide_net.MiracleWeightWideNet(opt)
+elif opt.MODEL == 'MiracleWideNet':
+    net = miracle_wide_net.MiracleWideNet(opt)
+elif opt.MODEL == 'MiracleNet':
+    net = miracle_net.MiracleNet(opt)
+
 if opt.TEST_ALL:
     results = []
     all_pairs = load_all_data('./TempData/')
@@ -33,7 +39,7 @@ if opt.TEST_ALL:
     all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
                             num_workers=opt.NUM_WORKERS, drop_last=False)
     NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
-    temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"
+    temp_model_name = NET_SAVE_PREFIX + "/best_model.dat"
     if os.path.exists(temp_model_name):
         net, PRE_EPOCH, best_loss = net.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)

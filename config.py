@@ -13,6 +13,7 @@ class Config(object):
         self.USE_CUDA            = torch.cuda.is_available()
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.SUMMARY_PATH        = "./source/summary/Miracle_Net"
+        self.MODEL               = 'MiracleWeightWideNet'
         self.TEST_ALL            = False
         self.TRAINDATARATIO      = 0.7
         self.LOAD_SAVED_MOD      = True
