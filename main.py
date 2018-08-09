@@ -44,6 +44,7 @@ if opt.TEST_ALL:
         net, PRE_EPOCH, best_loss = net.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)
     results = test_all(opt, all_loader, net, results)
-    pickle.dump(results, open('./source/val_results/results.pkl', 'wb+'))
+    out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
+    pickle.dump(results, open(out_file, 'wb+'))
 else:
     net = training(opt, train_loader, test_loader, net)

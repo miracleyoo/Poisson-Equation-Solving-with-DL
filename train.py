@@ -45,8 +45,6 @@ def training(opt, train_loader, test_loader, net):
 
     NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
     temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"
-    # temp_model_name = opt.NET_SAVE_PATH +  '%s_model_temp.pkl' % net.__class__.__name__
-    # best_model_name = opt.NET_SAVE_PATH + '%s_model_best.pkl' % net.__class__.__name__
     if not os.path.exists(NET_SAVE_PREFIX):
         os.mkdir(NET_SAVE_PREFIX)
     if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
