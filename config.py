@@ -20,7 +20,7 @@ class Config(object):
         self.NUM_TEST            = 0
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1
-        self.NUM_EPOCHS          = 50
+        self.NUM_EPOCHS          = 100
         # self.BATCH_SIZE          = 2
         # self.TEST_BATCH_SIZE     = 1
         # self.NUM_WORKERS         = 1

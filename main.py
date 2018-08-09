@@ -6,7 +6,7 @@ from utils import *
 from data_loader import *
 from train import *
 from config import Config
-from models import miracle_net
+from models import miracle_net, miracle_wide_net
 import pickle
 
 opt = Config()
@@ -25,7 +25,7 @@ test_loader = DataLoader(dataset=testDataset, batch_size=opt.TEST_BATCH_SIZE, sh
 opt.NUM_TRAIN = len(trainDataset)
 opt.NUM_TEST = len(testDataset)
 
-net = miracle_net.MiracleNet(opt)
+net = miracle_wide_net.MiracleWideNet(opt)
 if opt.TEST_ALL:
     results = []
     all_pairs = load_all_data('./TempData/')
