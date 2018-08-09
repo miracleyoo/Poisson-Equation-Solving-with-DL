@@ -34,7 +34,7 @@ def border_loss(A, B, opt):
     B = B.resize(batch, opt.LENGTH, opt.WIDTH)
     A_bor = A * std
     B_bor = B * std
-    return vec_sim + 3 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
+    return vec_sim + 2 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
 
 
 def training(opt, train_loader, test_loader, net):
