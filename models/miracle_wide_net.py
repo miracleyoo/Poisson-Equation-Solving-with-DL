@@ -42,7 +42,7 @@ class MiracleWideNet(BasicModule):
         )
         self.fc = nn.Sequential(
             nn.Linear((9-4*2*0) * (41-4*2*0) * 512, opt.LINER_HID_SIZE),
-            nn.BatchNorm2d(opt.LINER_HID_SIZE),
+            nn.BatchNorm1d(opt.LINER_HID_SIZE),
             nn.LeakyReLU(),
             nn.Dropout(0.5),
             nn.Linear(opt.LINER_HID_SIZE, opt.NUM_CLASSES)
