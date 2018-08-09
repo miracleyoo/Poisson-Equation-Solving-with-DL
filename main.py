@@ -6,7 +6,7 @@ from utils import *
 from data_loader import *
 from train import *
 from config import Config
-from models import miracle_net, miracle_wide_net, miracle_weight_wide_net
+from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 import pickle
 
 opt = Config()
@@ -31,6 +31,8 @@ elif opt.MODEL == 'MiracleWideNet':
     net = miracle_wide_net.MiracleWideNet(opt)
 elif opt.MODEL == 'MiracleNet':
     net = miracle_net.MiracleNet(opt)
+elif opt.MODEL == 'MiracleLineConvNet':
+    net = miracle_lineconv_net.MiracleLineConvNet(opt)
 
 if opt.TEST_ALL:
     results = []

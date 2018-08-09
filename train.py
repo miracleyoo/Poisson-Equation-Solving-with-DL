@@ -157,5 +157,6 @@ def test_all(opt, all_loader, net, results):
             outputs, labels = outputs.data.tolist(), labels.data.tolist()
         results.extend([(label, output) for label, output in zip(labels, outputs)])
 
-    print('==> Testing finished. You can find the result matrix in ./source/val_results/results.pkl')
+    out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
+    print('==> Testing finished. You can find the result matrix in '+out_file)
     return results

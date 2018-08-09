@@ -8,20 +8,23 @@ from .BasicModule import BasicModule
 torch.manual_seed(1)
 
 
-class MiracleWeightWideNet(BasicModule):
+class MiracleLineConvNet(BasicModule):
     def __init__(self, opt):
-        super(MiracleWeightWideNet, self).__init__()
-        self.model_name = "Miracle_Weight_Wide_Net"
+        super(MiracleLineConvNet, self).__init__()
+        self.model_name = "Miracle_Line_Conv_Net"
         self.weight     = {3: 4, 5: 2, 7: 1, 9: 1}
         init_convs = [nn.Sequential(
-            nn.Conv2d(2, out_channels=16*self.weight[kernel_size],
+            nn.Conv2d(in_channels=2, out_channels=16*self.weight[kernel_size],
                       kernel_size=kernel_size, stride=1,
                       padding=(kernel_size-1)//2),
-            nn.BatchNorm2d(16 * self.weight[kernel_size]),
+            nn.BatchNorm2d(16*self.weight[kernel_size]),
             nn.LeakyReLU(),
             nn.MaxPool2d(3, 1, padding=1)
-        ) for kernel_size in (3, 5, 7, 9)]
+        ) for kernel_size in (3, 5)]
 
+        self.lineconv = nn.Conv2d(in_channels=2, out_channels=32,
+                                  kernel_size=(1, 9), padding=(0, 4))
+        init_convs.append(self.lineconv)
         self.init_convs = nn.ModuleList(init_convs)
 
         self.convs = nn.Sequential(

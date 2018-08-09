@@ -8,12 +8,13 @@ import torchvision.models as models
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+
 class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
         self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.MODEL               = 'MiracleWeightWideNet'
-        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1'
+        self.MODEL               = 'MiracleLineConvNet'
+        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
         self.TEST_ALL            = False
         self.TRAINDATARATIO      = 0.7
