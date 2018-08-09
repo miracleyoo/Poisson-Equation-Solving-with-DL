@@ -16,7 +16,7 @@ class MiracleWideNet(BasicModule):
         init_convs = [nn.Sequential(
             nn.Conv2d(2, out_channels=32, kernel_size=kernel_size,
                       stride=1, padding=(kernel_size-1)//2),
-            nn.BatchNorm1d(32),
+            nn.BatchNorm2d(32),
             nn.LeakyReLU(),
             nn.MaxPool2d(3, 1, padding=1)
         ) for kernel_size in (3, 5, 7, 9)]
@@ -42,7 +42,7 @@ class MiracleWideNet(BasicModule):
         )
         self.fc = nn.Sequential(
             nn.Linear((9-4*2*0) * (41-4*2*0) * 512, opt.LINER_HID_SIZE),
-            nn.BatchNorm1d(opt.LINER_HID_SIZE),
+            nn.BatchNorm2d(opt.LINER_HID_SIZE),
             nn.LeakyReLU(),
             nn.Dropout(0.5),
             nn.Linear(opt.LINER_HID_SIZE, opt.NUM_CLASSES)
