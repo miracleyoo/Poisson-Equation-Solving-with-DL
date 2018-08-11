@@ -18,6 +18,7 @@ class Config(object):
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
         self.LOAD_SAVED_MOD      = True
         self.TEST_ALL            = False
+        self.SAVE_TEMP_MODEL     = True
         self.TRAINDATARATIO      = 0.7
         self.PIC_SIZE            = 256
         self.NUM_TEST            = 0

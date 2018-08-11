@@ -42,11 +42,11 @@ def training(opt, train_loader, test_loader, net):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
     best_loss = 100
     PRE_EPOCH = 0
-    print('==> Now using ')
+    print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
     print('==> Loading model ...')
 
     NET_SAVE_PREFIX = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
-    temp_model_name = NET_SAVE_PREFIX + "/temp_model.dat"
+    temp_model_name = NET_SAVE_PREFIX + "temp_model.dat"
     if not os.path.exists(NET_SAVE_PREFIX):
         os.mkdir(NET_SAVE_PREFIX)
     if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
@@ -92,7 +92,8 @@ def training(opt, train_loader, test_loader, net):
 
         # Save a temp model
         # torch.save(net, temp_model_name)
-        net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
+        if opt.SAVE_TEMP_MODEL:
+            net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
 
         # Start testing
         test_loss = testing(opt, test_loader, net)
