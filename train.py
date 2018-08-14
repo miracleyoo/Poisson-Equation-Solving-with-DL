@@ -59,6 +59,8 @@ def training(opt, train_loader, test_loader, net):
         print("==> Using CUDA.")
 
     writer = SummaryWriter(opt.SUMMARY_PATH)
+    dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 41, 9))
+    writer.add_graph(net, (dummy_input,))
 
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
 

@@ -13,10 +13,10 @@ class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
         self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.MODEL               = 'MiracleLineConvNet'
+        self.MODEL               = 'MiracleWeightWideNet'
         self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2-FULL_SET'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
-        self.LOAD_SAVED_MOD      = True
+        self.LOAD_SAVED_MOD      = False
         self.TEST_ALL            = False
         self.SAVE_TEMP_MODEL     = True
         self.TRAINDATARATIO      = 0.7
