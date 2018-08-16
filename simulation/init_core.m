@@ -1,4 +1,6 @@
-function [nx1, ny1, charge_p, charge_n, bg_charge, phi, Vp, Vn, xmax, ymax, qD, cpsp, scatGaAs, scatGaAs_hole, Gm, p_icpg, n_icpg, left_pts, right_pts, valley, particles] = init_core(inputArg1,inputArg2)
+% function [nx1, ny1, charge_p, charge_n, bg_charge, phi, Vp, Vn, xmax, ymax, qD, cpsp, scatGaAs, scatGaAs_hole, Gm, p_icpg, n_icpg, left_pts, right_pts, valley, particles] = init_core()
+function [nx1, ny1] = init_core()
+
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
 %include hole
@@ -14,6 +16,7 @@ ppc=8;
 %--------Simulation Settings-----------------------------------------------
 dx=1e-8;
 dy=1e-8;
+tsteps=20000;
 
 %--------Device Geomrety---------------------------------------------------
 Ttot=0.08e-6;
@@ -37,7 +40,7 @@ eml=0.074*emR;
 eM=[emG,emL,emh,eml];
 alpha_G=(1/Eg)*(1-emG/emR)^2;   %Alpha for Non-Parabolicity of Gamma Band
 alpha_L=(1/(Eg+Egl))*(1-emL/emR)^2;%Alpha for Non-Parabolicty of L Band
-alpha=[alpha_G,alpha_L,0,0];%for holes, alpha=0(assume parabolic)
+alphas=[alpha_G,alpha_L,0,0];%for holes, alpha=0(assume parabolic)
 ni=1.8e12;%GaAs at 300k
 contact_potential=bk*T/q*log(cdop*cdop/ni^2);
 
@@ -70,15 +73,29 @@ right_pts=nx1:nx1:nx1*ny1;
 p_icpg(length(left_pts))=0;
 n_icpg(length(right_pts))=0;
 
-Vp=Vp_all(1)-contact_potential/2;
-Vn=Vn_all(1)+contact_potential/2;
+% Vp=Vp_all(1)-contact_potential/2;
+% Vn=Vn_all(1)+contact_potential/2;
+% 
+% %---------Initialize Particles---------------------------------------------
+% [particles,valley,bg_charge,cpsp,N,p_icpg,n_icpg,xmax,ymax]=pn_init_v2(max_particles,dope_type,dx,dy,Ltot,nx1,ny1,cdop,ppc,bk,T,q,h,alpha,eM,Gm,Lp,A,B,C,emR,hd);
+% %grids start at 1, and position starts at 0
+% 
+% %--------Initial Charge/Field Computations---------------------------------
+% [charge_p,charge_n]=pn_charge_v2(particles,valley,nx1,ny1,dx,dy,max_particles,cpsp);%净电子数
+% phi=zeros(ny1,nx1);
+% 
+% number=zeros(tsteps,4);
+% 
+% %calculate current
+% p_enter=zeros(tsteps,1);
+% p_exit=zeros(tsteps,1);
+% p_real=zeros(tsteps,1);
+% n_enter=zeros(tsteps,1);
+% n_exit=zeros(tsteps,1);
+% n_real=zeros(tsteps,1);
+% current_n=zeros(tsteps,1);
+% current_p=zeros(tsteps,1);
 
-%---------Initialize Particles---------------------------------------------
-[particles,valley,bg_charge,cpsp,N,p_icpg,n_icpg,xmax,ymax]=pn_init_v2(max_particles,dope_type,dx,dy,Ltot,nx1,ny1,cdop,ppc,bk,T,q,h,alpha,eM,Gm,Lp,A,B,C,emR,hd);
-%grids start at 1, and position starts at 0
-
-%--------Initial Charge/Field Computations---------------------------------
-[charge_p,charge_n]=pn_charge_v2(particles,valley,nx1,ny1,dx,dy,max_particles,cpsp);%净电子数
-phi=zeros(ny1,nx1);
+save('init_data.mat');
 end
 

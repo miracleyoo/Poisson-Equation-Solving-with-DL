@@ -1,7 +1,9 @@
-function [current_n, current_p, particle_num] = statistics_core(valley, particle_num, n_real, p_real, current_n, current_p, max_particles, ti)
+function [] = statistics_core(ti, save_name)
 %UNTITLED4 此处显示有关此函数的摘要
 %   此处显示详细说明
 %net cathode current----
+load(save_name);
+
 if ti==1
     current_n(ti,1)=current_n(ti,1);
 else
@@ -31,5 +33,6 @@ index_v4=index_v4(:,1).*(1:max_particles).';
 index_v4=index_v4(index_v4~=0);
 
 particle_num(ti,:)=[length(index_v1),length(index_v2),length(index_v3),length(index_v4)];
+save(save_name);
 end
 

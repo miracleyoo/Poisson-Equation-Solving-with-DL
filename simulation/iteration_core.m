@@ -1,6 +1,10 @@
-function [valley, charge_n, charge_p, n_real, p_real, number] = iteration_core(valley, particles, number, fx, fy, p_icpg, n_icpg, left_pts, right_pts, scatGaAs, scatGaAs_hole, Gm, ti, nx1, ny1, xmax, ymax, qD, cpsp)
+% function [valley, charge_n, charge_p, n_real, p_real, number] = iteration_core(valley, particles, number, fx, fy, p_icpg, n_icpg, left_pts, right_pts, scatGaAs, scatGaAs_hole, Gm, ti, nx1, ny1, xmax, ymax, qD, cpsp)
+function [] = iteration_core(fx, fy, ti, save_name)
+
 %UNTITLED3 此处显示有关此函数的摘要
 %   此处显示详细说明
+load(save_name);
+
 dx = 1e-08;
 dy = 1e-08;
 dt = 1e-14;
@@ -31,7 +35,7 @@ eml=0.074*emR;
 eM=[emG,emL,emh,eml];
 alpha_G=(1/Eg)*(1-emG/emR)^2;   %Alpha for Non-Parabolicity of Gamma Band
 alpha_L=(1/(Eg+Egl))*(1-emL/emR)^2;%Alpha for Non-Parabolicty of L Band
-alpha=[alpha_G,alpha_L,0,0];%for holes, alpha=0(assume parabolic)
+alphas=[alpha_G,alpha_L,0,0];%for holes, alpha=0(assume parabolic)
 
 hw0=0.03536;
 hwij=0.03;
@@ -43,7 +47,6 @@ B=-4.82;
 C=7.7;
 g100=B/A;
 g111=sqrt((B/A)^2+(C/A)^2/3);
-
 
 p_temp=0;
 n_temp=0;
@@ -75,8 +78,8 @@ for n=1:max_particles
                     sk=kx*kx+ky*ky+kz*kz;
                     gk=(h*h/(2*eM(iv)))*sk*(1/q);
 
-                    x=x+(h/eM(iv))*(kx+0.5*dkx)/(sqrt(1+4*alpha(iv)*gk))*tau;
-                    y=y+(h/eM(iv))*(ky+0.5*dky)/(sqrt(1+4*alpha(iv)*gk))*tau;
+                    x=x+(h/eM(iv))*(kx+0.5*dkx)/(sqrt(1+4*alphas(iv)*gk))*tau;
+                    y=y+(h/eM(iv))*(ky+0.5*dky)/(sqrt(1+4*alphas(iv)*gk))*tau;
 
                     particles(n,1)=kx+dkx;  %kx
                     particles(n,2)=ky+dky;  %ky
@@ -151,7 +154,7 @@ for n=1:max_particles
 
                 %Scatter----------------------------
                 if valley(n,1)~=9
-                    [particle,valley(n,1)]=pn_scat_v2(particles(n,:),valley(n,1),scatGaAs,scatGaAs_hole,de,q,h,eM,alpha,qD,hw0,A,B,C,emR,n,hwij,Egl,Egg,hwe,g100,g111);
+                    [particle,valley(n,1)]=pn_scat_v2(particles(n,:),valley(n,1),scatGaAs,scatGaAs_hole,de,q,h,eM,alphas,qD,hw0,A,B,C,emR,n,hwij,Egl,Egg,hwe,g100,g111);
                     particles(n,:)=particle(1,:);
                 end
 
@@ -183,8 +186,8 @@ for n=1:max_particles
                 sk=kx*kx+ky*ky+kz*kz;
                 gk=(h*h/(2*eM(iv)))*sk*(1/q);
 
-                x=x+(h/eM(iv))*(kx+0.5*dkx)/(sqrt(1+4*alpha(iv)*gk))*tau;
-                y=y+(h/eM(iv))*(ky+0.5*dky)/(sqrt(1+4*alpha(iv)*gk))*tau;
+                x=x+(h/eM(iv))*(kx+0.5*dkx)/(sqrt(1+4*alphas(iv)*gk))*tau;
+                y=y+(h/eM(iv))*(ky+0.5*dky)/(sqrt(1+4*alphas(iv)*gk))*tau;
 
                 particles(n,1)=kx+dkx;  %kx
                 particles(n,2)=ky+dky;  %ky
@@ -264,7 +267,7 @@ for n=1:max_particles
 end              
 
 %Renew--------------------
-[particles,valley,p_added,n_added,number]=pn_renew_v6(particles,valley,Ttot,dx,dy,nx1,ny1,max_particles,p_icpg,n_icpg,bk,T,q,h,alpha,eM,emR,Gm,tdt,left_pts,right_pts,Ltot,A,B,C,ti,number,hd);
+[particles,valley,p_added,n_added,number]=pn_renew_v6(particles,valley,Ttot,dx,dy,nx1,ny1,max_particles,p_icpg,n_icpg,bk,T,q,h,alphas,eM,emR,Gm,tdt,left_pts,right_pts,Ltot,A,B,C,ti,number,hd);
 p_real(ti,1)=p_added-p_temp;%p_added is how many positive particles are injected in renew
 n_real(ti,1)=n_added-n_temp;%n_added is how many negative particles are injected in renew
 %p_real is how many positive particles are injected in ti
@@ -272,6 +275,6 @@ n_real(ti,1)=n_added-n_temp;%n_added is how many negative particles are injected
 
 %Charge Computation-------
 [charge_p,charge_n]=pn_charge_v2(particles,valley,nx1,ny1,dx,dy,max_particles,cpsp);
-
+save(save_name);
 end
 

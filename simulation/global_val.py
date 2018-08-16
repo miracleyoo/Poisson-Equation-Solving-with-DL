@@ -42,7 +42,7 @@ alpha_L = (1 / (Eg + Egl))*(1 - emL / emR) ** 2
 
 eC = [Egg, Egl]
 eM = [emG, emL, emh, eml]
-alpha = [alpha_G, alpha_L, 0.0, 0.0]
+alphas = [alpha_G, alpha_L, 0.0, 0.0]
 
 eps_stat = 12.9*eps_o
 eps_inf = 10.92*eps_o
