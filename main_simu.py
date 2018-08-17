@@ -22,17 +22,17 @@ class Timer(object):
 
 def gen_input(Vn, Vp, nx1, ny1, net_charge):
     net_charge = np.array(net_charge)[np.newaxis, :]
-    border_cond = np.zeros(1, ny1, nx1)
+    border_cond = np.zeros((1, int(ny1), int(nx1)))
     border_cond[0, :, 0] = Vn
     border_cond[0, :, -1] = Vp
     model_input = np.concatenate((net_charge, border_cond), axis=0)
-    return model_input
+    return model_input[np.newaxis, :]
 
 
 eng = matlab.engine.start_matlab()
 Vp_all = [0]
 Vn_all = [0]
-USE_DL = True
+USE_DL = False
 
 with Timer('init_core'):
     nx1, ny1 = eng.init_core(nargout=2)
@@ -51,7 +51,8 @@ for a in range(len(Vp_all)):
         if USE_DL:
             with Timer('dl_solver'):
                 phi = dl_solver(gen_input(Vn, Vp, nx1, ny1, net_charge), net, opt)
-                fx, fy = eng.fxy_core(matlab.double(phi), nx1, ny1)
+                phi = matlab.double(phi.squeeze().reshape(9, 41).tolist())
+                fx, fy = eng.fxy_core(phi, nargout=2)
         else:
             with Timer('pn_poisson_v5'):
                 fx, fy, phi = eng.pn_poisson_v5(save_name, nargout=3)
@@ -63,8 +64,8 @@ for a in range(len(Vp_all)):
             if USE_DL:
                 with Timer('dl_solver'):
                     phi = dl_solver(gen_input(Vn, Vp, nx1, ny1, net_charge), net, opt)
-                    phi = matlab.double(phi)
-                    fx, fy = eng.fxy_core(phi, nx1, ny1)
+                phi = matlab.double(phi.squeeze().reshape(9, 41).tolist())
+                fx, fy = eng.fxy_core(phi, nargout=2)
             else:
                 with Timer('pn_poisson_v5'):
                     fx, fy, phi = eng.pn_poisson_v5(save_name, nargout=3)

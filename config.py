@@ -3,8 +3,6 @@
 
 import torch
 import os
-import torch.nn as nn
-import torchvision.models as models
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -12,13 +10,17 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
-        self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.MODEL               = 'MiracleWeightWideNet'
-        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-2-FULL_SET'
-        self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
         self.LOAD_SAVED_MOD      = False
         self.TEST_ALL            = False
+        self.TRAIN_ALL           = True
         self.SAVE_TEMP_MODEL     = True
+        self.NET_SAVE_PATH       = "./source/trained_net/"
+        self.MODEL               = 'MiracleWeightWideNet'
+        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1'
+        if self.TRAIN_ALL:
+            self.PROCESS_ID += '_TRAIN_ALL'
+        self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
+
         self.TRAINDATARATIO      = 0.7
         self.PIC_SIZE            = 256
         self.NUM_TEST            = 0
@@ -34,6 +36,3 @@ class Config(object):
         self.BATCH_SIZE          = 32
         self.TEST_BATCH_SIZE     = 128
         self.NUM_WORKERS         = 4
-        # self.BATCH_SIZE          = 2
-        # self.TEST_BATCH_SIZE     = 1
-        # self.NUM_WORKERS         = 1

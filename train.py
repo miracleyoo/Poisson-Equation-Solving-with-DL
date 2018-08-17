@@ -59,9 +59,10 @@ def training(opt, train_loader, test_loader, net):
         print("==> Using CUDA.")
 
     writer = SummaryWriter(opt.SUMMARY_PATH)
-    dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 41, 9))
+    dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 9, 41))
     writer.add_graph(net, (dummy_input,))
 
+    # WARNING: input shape: (batch, 9, 41) but output shape: (batch, 41,9)
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
 
     for epoch in range(opt.NUM_EPOCHS):

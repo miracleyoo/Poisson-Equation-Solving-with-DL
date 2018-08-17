@@ -33,7 +33,6 @@ class BasicModule(nn.Module):
 
         path = prefix + name
 
-
         torch.save({
             'epoch': epoch + 1,
             'state_dict': self.state_dict(),

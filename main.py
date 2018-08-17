@@ -13,6 +13,7 @@ opt = Config()
 
 folder_init(opt)
 train_pairs, test_pairs = load_data('./TempData/')
+all_pairs = load_all_data('./TempData/')
 
 trainDataset = POISSON(train_pairs, opt)
 train_loader = DataLoader(dataset=trainDataset, batch_size=opt.BATCH_SIZE, shuffle=True, num_workers=opt.NUM_WORKERS,
@@ -21,6 +22,10 @@ train_loader = DataLoader(dataset=trainDataset, batch_size=opt.BATCH_SIZE, shuff
 testDataset = POISSON(test_pairs, opt)
 test_loader = DataLoader(dataset=testDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
                          num_workers=opt.NUM_WORKERS, drop_last=False)
+
+allDataset = POISSON(all_pairs, opt)
+all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
+                        num_workers=opt.NUM_WORKERS, drop_last=False)
 
 opt.NUM_TRAIN = len(trainDataset)
 opt.NUM_TEST = len(testDataset)
@@ -36,10 +41,6 @@ elif opt.MODEL == 'MiracleLineConvNet':
 
 if opt.TEST_ALL:
     results = []
-    all_pairs = load_all_data('./TempData/')
-    allDataset = POISSON(all_pairs, opt)
-    all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
-                            num_workers=opt.NUM_WORKERS, drop_last=False)
     NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
     temp_model_name = NET_SAVE_PREFIX + "/best_model.dat"
     if os.path.exists(temp_model_name):
@@ -49,4 +50,7 @@ if opt.TEST_ALL:
     out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
     pickle.dump(results, open(out_file, 'wb+'))
 else:
-    net = training(opt, train_loader, test_loader, net)
+    if opt.TRAIN_ALL:
+        net = training(opt, all_loader, test_loader, net)
+    else:
+        net = training(opt, train_loader, test_loader, net)
