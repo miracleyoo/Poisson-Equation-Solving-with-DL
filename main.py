@@ -24,7 +24,7 @@ test_loader = DataLoader(dataset=testDataset, batch_size=opt.TEST_BATCH_SIZE, sh
                          num_workers=opt.NUM_WORKERS, drop_last=False)
 
 allDataset = POISSON(all_pairs, opt)
-all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
+all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=True,
                         num_workers=opt.NUM_WORKERS, drop_last=False)
 
 
