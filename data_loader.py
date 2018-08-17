@@ -4,6 +4,7 @@
 import torch
 from torch.utils.data import Dataset
 
+
 class POISSON(Dataset):
     def __init__(self, data, opt):
         super(POISSON, self).__init__()
@@ -11,7 +12,7 @@ class POISSON(Dataset):
         self.opt = opt
 
     def __len__(self):
-        return 128#len(self.data)
+        return len(self.data)
 
     def __getitem__(self, index):
         input, label = self.data[index]

@@ -27,8 +27,6 @@ allDataset = POISSON(all_pairs, opt)
 all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
                         num_workers=opt.NUM_WORKERS, drop_last=False)
 
-opt.NUM_TRAIN = len(trainDataset)
-opt.NUM_TEST = len(testDataset)
 
 if opt.MODEL == 'MiracleWeightWideNet':
     net = miracle_weight_wide_net.MiracleWeightWideNet(opt)
@@ -50,7 +48,10 @@ if opt.TEST_ALL:
     out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
     pickle.dump(results, open(out_file, 'wb+'))
 else:
+    opt.NUM_TEST = len(testDataset)
     if opt.TRAIN_ALL:
+        opt.NUM_TRAIN = len(allDataset)
         net = training(opt, all_loader, test_loader, net)
     else:
+        opt.NUM_TRAIN = len(trainDataset)
         net = training(opt, train_loader, test_loader, net)
