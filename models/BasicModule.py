@@ -14,7 +14,7 @@ class BasicModule(nn.Module):
         self.opt = opt
     
     def load(self, path):
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, map_location='cpu')
         epoch      = checkpoint['epoch']
         best_acc   = checkpoint['best_acc']
         self.load_state_dict(checkpoint['state_dict'])

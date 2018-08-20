@@ -1,4 +1,4 @@
-function [net_charge, phi, Vp, Vn] = subinit_core(save_name, a, b)
+function [net_charge, Vp, Vn] = subinit_core(save_name, a, b)
 %UNTITLED5 此处显示有关此函数的摘要
 %   此处显示详细说明
 load('init_data.mat');
@@ -11,7 +11,7 @@ Vn=Vn_all(b)+contact_potential/2;
 
 %--------Initial Charge/Field Computations---------------------------------
 [charge_p,charge_n]=pn_charge_v2(particles,valley,nx1,ny1,dx,dy,max_particles,cpsp);%净电子数
-phi=zeros(ny1,nx1);
+% phi=zeros(ny1,nx1);
 
 number=zeros(tsteps,4);
 

@@ -1,10 +1,10 @@
 % function [fx,fy,phi]=pn_poisson_v5(dx,dy,nx1,ny1,eps_stat,q,p_charge,n_charge,bg_charge,phi,Vp,Vn)
-function [fx,fy,phi]=pn_poisson_v5(save_name)
+function [fx,fy,phi]=pn_poisson_v5(phi, save_name)
 load(save_name);
 
 k=0;
-shapes = size(phi);
-phi = zeros(shapes(1), shapes(2));
+% shapes = size(phi);
+% phi = zeros(shapes(1), shapes(2));
 delta_phi=0.01;
 delta_phi_max=3e-6;
 net_charge=bg_charge-charge_n+charge_p;

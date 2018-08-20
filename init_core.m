@@ -1,5 +1,5 @@
 % function [nx1, ny1, charge_p, charge_n, bg_charge, phi, Vp, Vn, xmax, ymax, qD, cpsp, scatGaAs, scatGaAs_hole, Gm, p_icpg, n_icpg, left_pts, right_pts, valley, particles] = init_core()
-function [nx1, ny1] = init_core()
+function [nx1, ny1] = init_core(Vp_all, Vn_all)
 
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
@@ -10,8 +10,6 @@ hd=3;%highly doped mear contact
 max_particles=40e4;%55e4;
 de=0.002;
 T=300;
-Vp_all=[0];
-Vn_all=[0];
 ppc=8;
 %--------Simulation Settings-----------------------------------------------
 dx=1e-8;
