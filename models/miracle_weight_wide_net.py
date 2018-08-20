@@ -28,19 +28,19 @@ class MiracleWeightWideNet(BasicModule):
             nn.Conv2d(128, 128, 3, stride=1, padding=1),
             nn.BatchNorm2d(128),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
-            nn.Conv2d(128, 128, 3, stride=1, padding=1),
-            nn.BatchNorm2d(128),
-            nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
+            # nn.MaxPool2d(3, 1, padding=1),
+            # nn.Conv2d(128, 128, 3, stride=1, padding=1),
+            # nn.BatchNorm2d(128),
+            # nn.LeakyReLU(),
+            # nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(128, 256, 3, stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
+            # nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(256, 512, 3, stride=1, padding=1),
             nn.BatchNorm2d(512),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1)
+            # nn.MaxPool2d(3, 1, padding=1)
         )
         self.fc = nn.Sequential(
             nn.Linear((9-4*2*0) * (41-4*2*0) * 512, opt.LINER_HID_SIZE),
