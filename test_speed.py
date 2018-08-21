@@ -7,6 +7,7 @@ import numpy as np
 import time
 from torch.autograd import Variable
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
+time_elapsed = []
 
 
 class Config(object):
@@ -30,9 +31,11 @@ class Timer(object):
         self.tstart = time.time()
 
     def __exit__(self, type, value, traceback):
+        global time_elapsed
         if self.name:
             print('==> [%s]:\t' % self.name, end='')
-        print('Elapsed Time: %s (s)' % (time.time() - self.tstart))
+        time_elapsed.append(time.time() - self.tstart)
+        print('Elapsed Time: %s (s)' % time_elapsed[-1])
 
 
 def dl_init():
@@ -55,12 +58,11 @@ def dl_init():
             net.cuda()
             print("==> Using CUDA.")
     else:
-        FileNotFoundError()
+        raise FileNotFoundError()
     return opt, net
 
 
 def gen_input(net_charge_f=np.random.randint(3, 9, size=(1, 9, 41))):
-    # net_charge_f = np.array(net_charge_f)[np.newaxis, :]
     border_cond = np.zeros((1, 9, 41))
     border_cond[0, :, 0] = -0.6
     border_cond[0, :, -1] = 0.6
@@ -81,10 +83,12 @@ def dl_solver(model_input, net, opt):
     return outputs
 
 
-with Timer('init_dl_core'):
-    opt, net = dl_init()
+# with Timer('init_dl_core'):
+opt, net = dl_init()
 
 for i in range(100):
     with Timer('dl_solver'):
         model_input = gen_input()
         phi = dl_solver(model_input, net, opt)
+
+print("Average time: {} (s)".format(sum(time_elapsed)/100))
