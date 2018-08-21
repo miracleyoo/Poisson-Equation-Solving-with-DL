@@ -73,11 +73,10 @@ def dl_solver(model_input, net, opt):
     if opt.USE_CUDA:
         inputs = Variable(torch.Tensor(model_input).cuda())
         outputs = net(inputs)
-        outputs.cpu()
+        outputs = outputs.cpu()
     else:
         inputs = Variable(torch.Tensor(model_input))
         outputs = net(inputs)
-
     outputs = outputs.data.numpy()
     return outputs
 
