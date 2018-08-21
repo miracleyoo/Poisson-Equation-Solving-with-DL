@@ -1,52 +1,16 @@
 % function [valley, charge_n, charge_p, n_real, p_real, number] = iteration_core(valley, particles, number, fx, fy, p_icpg, n_icpg, left_pts, right_pts, scatGaAs, scatGaAs_hole, Gm, ti, nx1, ny1, xmax, ymax, qD, cpsp)
-function [] = iteration_core(fx, fy, ti, save_name)
-
-%UNTITLED3 此处显示有关此函数的摘要
-%   此处显示详细说明
+function [net_charge] = iteration_core(fx, fy, ti, save_name)
+temp_ti = ti;
+temp_fx = fx;
+temp_fy = fy;
 load(save_name);
+fx = temp_fx;
+fy = temp_fy;
+ti = temp_ti;
+clear temp_fx;
+clear temp_fy;
+clear temp_ti;
 
-dx = 1e-08;
-dy = 1e-08;
-dt = 1e-14;
-
-hd=3;%highly doped mear contact
-max_particles=40e4;%55e4;
-de=0.002;
-T=300;
-
-%--------Device Geomrety---------------------------------------------------
-Ttot=0.08e-6;
-Ltot=0.4e-6;
-
-%---------Constants--------------------------------------------------------
-bk=1.38066e-23;                 %Boltzmann's Constant 
-q=1.60219e-19;                  %Charge of Electron
-h=1.05459e-34;                  %Planck's Constant (/2pi)
-emR=9.10953e-31;                %Mass of Resting Electron
-
-%---------GaAs Specific Constants------------------------------------------
-Eg=1.424;                       %Band Gap for GaAs
-Egg=0;                          %Energy difference between two generate Gamma Bands
-Egl=0.29;                       %Energy difference between Gamma and L Bands
-emG=0.067*emR;                  %Mass of Electron in Gamma Band
-emL=0.350*emR;                  %Mass of Electron in L Band
-emh=0.62*emR;
-eml=0.074*emR;
-eM=[emG,emL,emh,eml];
-alpha_G=(1/Eg)*(1-emG/emR)^2;   %Alpha for Non-Parabolicity of Gamma Band
-alpha_L=(1/(Eg+Egl))*(1-emL/emR)^2;%Alpha for Non-Parabolicty of L Band
-alphas=[alpha_G,alpha_L,0,0];%for holes, alpha=0(assume parabolic)
-
-hw0=0.03536;
-hwij=0.03;
-hwe=hwij;
-
-%inverse band mass parameters
-A=-7.65;
-B=-4.82;
-C=7.7;
-g100=B/A;
-g111=sqrt((B/A)^2+(C/A)^2/3);
 
 p_temp=0;
 n_temp=0;
@@ -275,6 +239,8 @@ n_real(ti,1)=n_added-n_temp;%n_added is how many negative particles are injected
 
 %Charge Computation-------
 [charge_p,charge_n]=pn_charge_v2(particles,valley,nx1,ny1,dx,dy,max_particles,cpsp);
+net_charge=bg_charge-charge_n+charge_p;
+clear ti;
 save(save_name);
 end
 

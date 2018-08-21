@@ -2,7 +2,10 @@ function [] = statistics_core(ti, save_name)
 %UNTITLED4 此处显示有关此函数的摘要
 %   此处显示详细说明
 %net cathode current----
+temp_ti = ti;
 load(save_name);
+ti = temp_ti;
+clear temp_ti;
 
 if ti==1
     current_n(ti,1)=current_n(ti,1);
@@ -33,6 +36,7 @@ index_v4=index_v4(:,1).*(1:max_particles).';
 index_v4=index_v4(index_v4~=0);
 
 particle_num(ti,:)=[length(index_v1),length(index_v2),length(index_v3),length(index_v4)];
+clear ti;
 save(save_name);
 end
 

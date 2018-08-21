@@ -1,10 +1,13 @@
 function [fx, fy] = fxy_core(phi)
 %UNTITLED6 此处显示有关此函数的摘要
 %   此处显示详细说明
-nx1=41;
+% temp_phi = phi;
+% load(save_name)
+% phi = temp_phi;
 ny1=9;
-dx = 1e-08;
-dy = 1e-08;
+nx1=41;
+dx=1e-8;
+dy=1e-8;
 
 fx(ny1,nx1)=0;
 for i=1:ny1
@@ -26,5 +29,6 @@ end
 %for top and bottom boundary
 fy(1,:)=fy(2,:);
 fy(end,:)=fy(end-1,:);
+% save(save_name)
 end
 

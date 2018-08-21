@@ -14,18 +14,21 @@ class Config(object):
         self.TEST_ALL            = False
         self.TRAIN_ALL           = True
         self.SAVE_TEMP_MODEL     = True
+        self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.MODEL               = 'MiracleWeightWideNet'
         self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1'
         if self.TRAIN_ALL:
             self.PROCESS_ID += '_TRAIN_ALL'
-        self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'/'
+        self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'_' +\
+                                   str(self.NUM_CHANNEL)+'CHANNEL/'
 
         self.TRAINDATARATIO      = 0.7
         self.PIC_SIZE            = 256
         self.NUM_TEST            = 0
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1
+
         self.NUM_EPOCHS          = 100
         self.NUM_CLASSES         = 369
         self.LEARNING_RATE       = 0.001

@@ -14,7 +14,7 @@ class MiracleWeightWideNet(BasicModule):
         self.model_name = "Miracle_Weight_Wide_Net"
         self.weight     = {3: 4, 5: 2, 7: 1, 9: 1}
         init_convs = [nn.Sequential(
-            nn.Conv2d(2, out_channels=16*self.weight[kernel_size],
+            nn.Conv2d(opt.NUM_CHANNEL, out_channels=16*self.weight[kernel_size],
                       kernel_size=kernel_size, stride=1,
                       padding=(kernel_size-1)//2),
             nn.BatchNorm2d(16 * self.weight[kernel_size]),
@@ -43,7 +43,7 @@ class MiracleWeightWideNet(BasicModule):
             # nn.MaxPool2d(3, 1, padding=1)
         )
         self.fc = nn.Sequential(
-            nn.Linear((9-4*2*0) * (41-4*2*0) * 512, opt.LINER_HID_SIZE),
+            nn.Linear((9-3*2*0) * (41-3*2*0) * 512, opt.LINER_HID_SIZE),
             nn.BatchNorm1d(opt.LINER_HID_SIZE),
             nn.LeakyReLU(),
             nn.Dropout(0.5),

@@ -1,7 +1,16 @@
 function [net_charge, Vp, Vn] = subinit_core(save_name, a, b)
 %UNTITLED5 此处显示有关此函数的摘要
 %   此处显示详细说明
+temp_a = a;
+temp_b = b;
+temp_save_name = save_name;
 load('init_data.mat');
+a = temp_a;
+b = temp_b;
+save_name = temp_save_name;
+clear temp_a;
+clear temp_b;
+clear temp_save_name;
 
 Vp=Vp_all(a)-contact_potential/2;
 Vn=Vn_all(b)+contact_potential/2;
