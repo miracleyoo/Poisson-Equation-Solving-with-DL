@@ -17,7 +17,7 @@ class Config(object):
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.MODEL               = 'MiracleWeightWideNet'
-        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1'
+        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1_LESS_LAYER_TRAIN_ALL'
         if self.TRAIN_ALL:
             self.PROCESS_ID += '_TRAIN_ALL'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'_' +\
