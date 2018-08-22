@@ -8,8 +8,38 @@ from train import *
 from config import Config
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 import pickle
+import torch
 
 opt = Config()
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+def model_to_device(model):
+    # Data Parallelism
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
+
+    model.to(device)
+    return model
+
+
+def load_model(model, model_type):
+    print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
+    print('==> Loading model ...')
+
+    net_save_prefix = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
+    temp_model_name = net_save_prefix + model_type
+    if not os.path.exists(net_save_prefix):
+        os.mkdir(net_save_prefix)
+    if os.path.exists(temp_model_name):
+        model, PRE_EPOCH, best_loss = model.load(temp_model_name)
+        print("Load existing model: %s" % temp_model_name)
+    else:
+        raise FileNotFoundError("The model you want to load doesn't exist!")
+    model_to_device(model)
+    return model, PRE_EPOCH, best_loss
+
 
 folder_init(opt)
 train_pairs, test_pairs = load_data('./TempData/')
@@ -36,22 +66,28 @@ elif opt.MODEL == 'MiracleNet':
     net = miracle_net.MiracleNet(opt)
 elif opt.MODEL == 'MiracleLineConvNet':
     net = miracle_lineconv_net.MiracleLineConvNet(opt)
+else:
+    raise KeyError('Your model is not found.')
+
+
+opt.NUM_TEST = len(testDataset)
 
 if opt.TEST_ALL:
     results = []
-    NET_SAVE_PREFIX = "./source/trained_net/" + net.model_name
-    temp_model_name = NET_SAVE_PREFIX + "/best_model.dat"
-    if os.path.exists(temp_model_name):
-        net, PRE_EPOCH, best_loss = net.load(temp_model_name)
-        print("Load existing model: %s" % temp_model_name)
-    results = test_all(opt, all_loader, net, results)
+    net, *_ = load_model(net, "best_model.dat")
+    results = test_all(opt, all_loader, net, results, device)
     out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
     pickle.dump(results, open(out_file, 'wb+'))
 else:
-    opt.NUM_TEST = len(testDataset)
+    pre_epoch = 0
+    best_loss = 100
+    if opt.LOAD_SAVED_MOD:
+        net, pre_epoch, best_loss = load_model(net, "temp_model.dat")
+    else:
+        model_to_device(net)
     if opt.TRAIN_ALL:
         opt.NUM_TRAIN = len(allDataset)
-        net = training(opt, all_loader, test_loader, net)
+        net = training(opt, all_loader, test_loader, net, pre_epoch, best_loss, device)
     else:
         opt.NUM_TRAIN = len(trainDataset)
-        net = training(opt, train_loader, test_loader, net)
+        net = training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device)

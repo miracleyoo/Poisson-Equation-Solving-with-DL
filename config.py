@@ -10,6 +10,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
+        # self.device              =
         self.LOAD_SAVED_MOD      = False
         self.TEST_ALL            = False
         self.TRAIN_ALL           = True
@@ -17,7 +18,7 @@ class Config(object):
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.MODEL               = 'MiracleWeightWideNet'
-        self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1_LESS_LAYER_TRAIN_ALL'
+        self.PROCESS_ID          = 'test'#'PADDING_LOSS1-2_WEI4-2-1-1_LESS_LAYER'
         if self.TRAIN_ALL:
             self.PROCESS_ID += '_TRAIN_ALL'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'_' +\

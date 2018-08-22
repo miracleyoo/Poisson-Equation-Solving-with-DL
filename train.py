@@ -6,9 +6,45 @@ import torch.nn as nn
 import torch.autograd
 import os
 import numpy as np
+import threading
 from torch.autograd import Variable
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
+best_loss = 100
+lock = threading.Lock()
+
+
+def save_models(opt, net, epoch, train_loss, best_loss, test_loss):
+    # Save a temp model
+    if opt.SAVE_TEMP_MODEL:
+        net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
+
+    # Save the best model
+    if test_loss / opt.NUM_TEST < best_loss:
+        best_loss = test_loss / opt.NUM_TEST
+        net.save(epoch, train_loss / opt.NUM_TRAIN, "best_model.dat")
+
+    return best_loss
+
+
+class MyThread(threading.Thread):
+    def __init__(self, opt, net, epoch, train_loss, best_loss, test_loss):
+        threading.Thread.__init__(self)
+        self.opt = opt
+        self.net = net
+        self.epoch = epoch
+        self.train_loss = train_loss
+        self.best_loss = best_loss
+        self.test_loss = test_loss
+
+    def run(self):
+        global best_loss
+        lock.acquire()
+        try:
+            best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss, self.test_loss)
+        finally:
+            # 改完了一定要释放锁:
+            lock.release()
 
 
 def cross_entropy(pred, soft_targets):
@@ -38,29 +74,30 @@ def border_loss(A, B, opt):
     return vec_sim + 2 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
 
 
-def training(opt, train_loader, test_loader, net):
+def training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
-    best_loss = 100
-    PRE_EPOCH = 0
-    print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
-    print('==> Loading model ...')
-
-    NET_SAVE_PREFIX = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
-    temp_model_name = NET_SAVE_PREFIX + "temp_model.dat"
-    if not os.path.exists(NET_SAVE_PREFIX):
-        os.mkdir(NET_SAVE_PREFIX)
-    if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
-        # net = torch.load(temp_model_name)
-        net, PRE_EPOCH, best_loss = net.load(temp_model_name)
-        print("Load existing model: %s" % temp_model_name)
+    # best_loss = 100
+    # PRE_EPOCH = 0
+    threads = []
+    # print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
+    # print('==> Loading model ...')
+    #
+    # NET_SAVE_PREFIX = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
+    # temp_model_name = NET_SAVE_PREFIX + "temp_model.dat"
+    # if not os.path.exists(NET_SAVE_PREFIX):
+    #     os.mkdir(NET_SAVE_PREFIX)
+    # if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
+    #     # net = torch.load(temp_model_name)
+    #     net, PRE_EPOCH, best_loss = net.load(temp_model_name)
+    #     print("Load existing model: %s" % temp_model_name)
 
     writer = SummaryWriter(opt.SUMMARY_PATH)
     dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 9, 41))
     writer.add_graph(net, (dummy_input,))
 
-    if opt.USE_CUDA:
-        net.cuda()
-        print("==> Using CUDA.")
+    # if opt.USE_CUDA:
+    #     net.cuda()
+    #     print("==> Using CUDA.")
 
     # WARNING: input shape: (batch, 9, 41) but output shape: (batch, 41,9)
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
@@ -74,10 +111,10 @@ def training(opt, train_loader, test_loader, net):
         print('==> Preparing Data ...')
         for i, data in tqdm(enumerate(train_loader), desc="Training", total=NUM_TRAIN_PER_EPOCH, leave=False, unit='b'):
             inputs, labels, *_ = data
-            if opt.USE_CUDA:
-                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-            else:
-                inputs, labels = Variable(inputs), Variable(labels)
+            # if opt.USE_CUDA:
+            inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
+            # else:
+            #     inputs, labels = Variable(inputs), Variable(labels)
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -93,42 +130,33 @@ def training(opt, train_loader, test_loader, net):
             # Do statistics for training
             train_loss += loss.data[0]
 
-        # Save a temp model
-        # torch.save(net, temp_model_name)
-        if opt.SAVE_TEMP_MODEL:
-            net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
-
         # Start testing
-        test_loss = testing(opt, test_loader, net)
+        test_loss = testing(opt, test_loader, net, device)
 
-        writer.add_scalar("Train/loss", train_loss / opt.NUM_TRAIN, epoch + PRE_EPOCH)
-        writer.add_scalar("Test/loss", test_loss / opt.NUM_TEST, epoch + PRE_EPOCH)
+        writer.add_scalar("Train/loss", train_loss / opt.NUM_TRAIN, epoch + pre_epoch)
+        writer.add_scalar("Test/loss", test_loss / opt.NUM_TEST, epoch + pre_epoch)
         # Output results
         print('Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
-            % (PRE_EPOCH + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
+            % (pre_epoch + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
                test_loss / opt.NUM_TEST))
         vec_dif(outputs, labels)
 
-        # Save the best model
-        if test_loss / opt.NUM_TEST < best_loss:
-            best_loss = test_loss / opt.NUM_TEST
-            # torch.save(net, best_model_name)
-            net.save(epoch, train_loss / opt.NUM_TRAIN, "best_model.dat")
-
+        threads.append(MyThread(opt, net, epoch, train_loss, best_loss, test_loss))
+        threads[epoch].start()
     print('==> Training Finished.')
     return net
 
 
-def testing(opt, test_loader, net):
+def testing(opt, test_loader, net, device):
     net.eval()
     test_loss = 0
 
     for i, data in tqdm(enumerate(test_loader), desc="Testing", total=len(test_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
-        if opt.USE_CUDA:
-            inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-        else:
-            inputs, labels = Variable(inputs), Variable(labels)
+        # if opt.USE_CUDA:
+        #     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+        # else:
+        inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
 
         # Compute the outputs and judge correct
         outputs = net(inputs)
@@ -138,20 +166,20 @@ def testing(opt, test_loader, net):
     return test_loss
 
 
-def test_all(opt, all_loader, net, results):
+def test_all(opt, all_loader, net, results, device):
     net.eval()
     test_loss = 0
-
-    if opt.USE_CUDA:
-        net.cuda()
-        print("==> Using CUDA.")
+    #
+    # if opt.USE_CUDA:
+    #     net.cuda()
+    #     print("==> Using CUDA.")
 
     for i, data in tqdm(enumerate(all_loader), desc="Testing", total=len(all_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
-        if opt.USE_CUDA:
-            inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-        else:
-            inputs, labels = Variable(inputs), Variable(labels)
+        # if opt.USE_CUDA:
+        #     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+        # else:
+        inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
 
         # Compute the outputs and judge correct
         outputs = net(inputs)
