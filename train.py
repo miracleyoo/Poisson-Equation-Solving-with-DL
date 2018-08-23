@@ -4,7 +4,6 @@
 import torch
 import torch.nn as nn
 import torch.autograd
-import os
 import numpy as np
 import threading
 from torch.autograd import Variable
@@ -43,7 +42,6 @@ class MyThread(threading.Thread):
         try:
             best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss, self.test_loss)
         finally:
-            # 改完了一定要释放锁:
             lock.release()
 
 
@@ -76,28 +74,11 @@ def border_loss(A, B, opt):
 
 def training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
-    # best_loss = 100
-    # PRE_EPOCH = 0
     threads = []
-    # print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
-    # print('==> Loading model ...')
-    #
-    # NET_SAVE_PREFIX = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
-    # temp_model_name = NET_SAVE_PREFIX + "temp_model.dat"
-    # if not os.path.exists(NET_SAVE_PREFIX):
-    #     os.mkdir(NET_SAVE_PREFIX)
-    # if os.path.exists(temp_model_name) and opt.LOAD_SAVED_MOD:
-    #     # net = torch.load(temp_model_name)
-    #     net, PRE_EPOCH, best_loss = net.load(temp_model_name)
-    #     print("Load existing model: %s" % temp_model_name)
 
     writer = SummaryWriter(opt.SUMMARY_PATH)
     dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 9, 41))
     writer.add_graph(net, (dummy_input,))
-
-    # if opt.USE_CUDA:
-    #     net.cuda()
-    #     print("==> Using CUDA.")
 
     # WARNING: input shape: (batch, 9, 41) but output shape: (batch, 41,9)
     optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
@@ -111,12 +92,7 @@ def training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device):
         print('==> Preparing Data ...')
         for i, data in tqdm(enumerate(train_loader), desc="Training", total=NUM_TRAIN_PER_EPOCH, leave=False, unit='b'):
             inputs, labels, *_ = data
-            # if opt.USE_CUDA:
             inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
-            # else:
-            #     inputs, labels = Variable(inputs), Variable(labels)
-
-            # zero the parameter gradients
             optimizer.zero_grad()
 
             # forward + backward + optimize
@@ -153,9 +129,6 @@ def testing(opt, test_loader, net, device):
 
     for i, data in tqdm(enumerate(test_loader), desc="Testing", total=len(test_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
-        # if opt.USE_CUDA:
-        #     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-        # else:
         inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
 
         # Compute the outputs and judge correct
@@ -169,16 +142,9 @@ def testing(opt, test_loader, net, device):
 def test_all(opt, all_loader, net, results, device):
     net.eval()
     test_loss = 0
-    #
-    # if opt.USE_CUDA:
-    #     net.cuda()
-    #     print("==> Using CUDA.")
 
     for i, data in tqdm(enumerate(all_loader), desc="Testing", total=len(all_loader), leave=False, unit='b'):
         inputs, labels, *_ = data
-        # if opt.USE_CUDA:
-        #     inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-        # else:
         inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
 
         # Compute the outputs and judge correct
