@@ -25,7 +25,7 @@ def load_data(opt, root='./Datasets/'):
 
     """
     if opt.USE_NEW_DATA:
-        DATA_PATH = [root+'train_data_2.mat', root+'test_data_2.mat']
+        DATA_PATH = [root + 'train_data_2.mat', root + 'test_data_2.mat']
     else:
         DATA_PATH = [root + 'train_data.mat', root + 'test_data.mat']
 
@@ -43,8 +43,12 @@ def load_data(opt, root='./Datasets/'):
     finally:
         print("==> Load test data successfully.")
 
-    train_data = dict((key,value) for key,value in train_data.items() if key=='X_train' or key=='Y_train')
-    test_data = dict((key, value) for key, value in test_data.items() if key == 'X_test' or key == 'Y_test')
+    if opt.USE_NEW_DATA:
+        train_data = dict((key,value) for key,value in train_data.items() if key=='X_2_train' or key=='Y_train')
+        test_data = dict((key, value) for key, value in test_data.items() if key == 'X_2_test' or key == 'Y_test')
+    else:
+        train_data = dict((key,value) for key,value in train_data.items() if key=='X_train' or key=='Y_train')
+        test_data = dict((key, value) for key, value in test_data.items() if key == 'X_test' or key == 'Y_test')
 
     train_pairs = [(x, y) for x, y in zip(train_data['X_train'], train_data['Y_train'])]
     test_pairs = [(x, y) for x, y in zip(test_data['X_test'], test_data['Y_test'])]
