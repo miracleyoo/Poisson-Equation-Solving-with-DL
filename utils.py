@@ -25,7 +25,12 @@ def load_data(opt, root='./Datasets/'):
 
     """
     if opt.USE_NEW_DATA:
-        DATA_PATH = [root + 'train_data_2.mat', root + 'test_data_2.mat']
+        DATA_PATH = [root + 'train_data_2.pkl', root + 'test_data_2.pkl']
+        train_pairs = pickle.load(open(DATA_PATH[0], 'rb'))
+        test_pairs = pickle.load(open(DATA_PATH[1], 'rb'))
+        print("==> Load train data successfully.")
+        print("==> Load test data successfully.")
+        return train_pairs, test_pairs
     else:
         DATA_PATH = [root + 'train_data.mat', root + 'test_data.mat']
 
@@ -35,8 +40,7 @@ def load_data(opt, root='./Datasets/'):
         train_data = h5py.File(DATA_PATH[0], 'r')
     finally:
         print("==> Load train data successfully.")
-        print("==> shape of train_data: ", train_data['X_2_train'].shape)
-        print("==> shape of test_data: ", train_data['Y_train'].shape)
+
     try:
         test_data = scipy.io.loadmat(DATA_PATH[1])
     except NotImplementedError:
@@ -44,19 +48,10 @@ def load_data(opt, root='./Datasets/'):
     finally:
         print("==> Load test data successfully.")
 
-
-    if opt.USE_NEW_DATA:
-        train_data = dict((key,value) for key, value in train_data.items() if key=='X_2_train' or key=='Y_train')
-        test_data = dict((key, value) for key, value in test_data.items() if key == 'X_2_test' or key == 'Y_test')
-        train_pairs = [(x, y) for x, y in zip(train_data['X_2_train'], train_data['Y_train'])]
-        test_pairs = [(x, y) for x, y in zip(test_data['X_2_test'], test_data['Y_test'])]
-    else:
-        train_data = dict((key,value) for key,value in train_data.items() if key=='X_train' or key=='Y_train')
-        test_data = dict((key, value) for key, value in test_data.items() if key == 'X_test' or key == 'Y_test')
-        train_pairs = [(x, y) for x, y in zip(train_data['X_train'], train_data['Y_train'])]
-        test_pairs = [(x, y) for x, y in zip(test_data['X_test'], test_data['Y_test'])]
-
-
+    train_data = dict((key,value) for key,value in train_data.items() if key=='X_train' or key=='Y_train')
+    test_data = dict((key, value) for key, value in test_data.items() if key == 'X_test' or key == 'Y_test')
+    train_pairs = [(x, y) for x, y in zip(train_data['X_train'], train_data['Y_train'])]
+    test_pairs = [(x, y) for x, y in zip(test_data['X_test'], test_data['Y_test'])]
 
     return train_pairs, test_pairs
 
