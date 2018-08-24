@@ -35,6 +35,7 @@ def load_data(opt, root='./Datasets/'):
         train_data = h5py.File(DATA_PATH[0], 'r')
     finally:
         print("==> Load train data successfully.")
+        print("==> shape of train_data: ", train_data.shape)
 
     try:
         test_data = scipy.io.loadmat(DATA_PATH[1])
@@ -42,6 +43,8 @@ def load_data(opt, root='./Datasets/'):
         test_data = h5py.File(DATA_PATH[1], 'r')
     finally:
         print("==> Load test data successfully.")
+        print("==> shape of test_data: ", train_data.shape)
+
 
     if opt.USE_NEW_DATA:
         train_data = dict((key,value) for key,value in train_data.items() if key=='X_2_train' or key=='Y_train')

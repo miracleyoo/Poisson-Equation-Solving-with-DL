@@ -57,17 +57,21 @@ allDataset = POISSON(all_pairs, opt)
 all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=True,
                         num_workers=opt.NUM_WORKERS, drop_last=False)
 
+print("==> All datasets are generated successfully.")
 
-if opt.MODEL == 'MiracleWeightWideNet':
-    net = miracle_weight_wide_net.MiracleWeightWideNet(opt)
-elif opt.MODEL == 'MiracleWideNet':
-    net = miracle_wide_net.MiracleWideNet(opt)
-elif opt.MODEL == 'MiracleNet':
-    net = miracle_net.MiracleNet(opt)
-elif opt.MODEL == 'MiracleLineConvNet':
-    net = miracle_lineconv_net.MiracleLineConvNet(opt)
-else:
-    raise KeyError('Your model is not found.')
+try:
+    if opt.MODEL == 'MiracleWeightWideNet':
+        net = miracle_weight_wide_net.MiracleWeightWideNet(opt)
+    elif opt.MODEL == 'MiracleWideNet':
+        net = miracle_wide_net.MiracleWideNet(opt)
+    elif opt.MODEL == 'MiracleNet':
+        net = miracle_net.MiracleNet(opt)
+    elif opt.MODEL == 'MiracleLineConvNet':
+        net = miracle_lineconv_net.MiracleLineConvNet(opt)
+except KeyError('Your model is not found.'):
+    exit(0)
+finally:
+    print("==> Model initialized successfully.")
 
 
 opt.NUM_TEST = len(testDataset)
