@@ -15,6 +15,7 @@ class Config(object):
         self.TEST_ALL            = False
         self.TRAIN_ALL           = False
         self.SAVE_TEMP_MODEL     = True
+        self.USE_NEW_DATA        = True
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
         self.MODEL               = 'MiracleWeightWideNet'

@@ -42,7 +42,7 @@ def load_model(model, model_type):
 
 
 folder_init(opt)
-train_pairs, test_pairs = load_data('./TempData/')
+train_pairs, test_pairs = load_data(opt, './TempData/')
 all_pairs = load_all_data('./TempData/')
 
 trainDataset = POISSON(train_pairs, opt)

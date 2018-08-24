@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def load_data(root='./Datasets/'):
+def load_data(opt, root='./Datasets/'):
     """
     :Outputs:
         train_pairs : the path of the train  images and their labels' index list
@@ -24,7 +24,11 @@ def load_data(root='./Datasets/'):
     train_data['Y_train'] :(6716, 369)
 
     """
-    DATA_PATH = [root+'train_data.mat', root+'test_data.mat']
+    if opt.USE_NEW_DATA:
+        DATA_PATH = [root+'train_data_2.mat', root+'test_data_2.mat']
+    else:
+        DATA_PATH = [root + 'train_data.mat', root + 'test_data.mat']
+
     try:
         train_data = scipy.io.loadmat(DATA_PATH[0])
     except NotImplementedError:
