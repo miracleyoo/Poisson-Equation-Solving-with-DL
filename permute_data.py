@@ -14,8 +14,8 @@ train_data = dict((key, value) for key, value in train_data.items() if key == 'X
 test_data = dict((key, value) for key, value in test_data.items() if key == 'X_2_test' or key == 'Y_test')
 train_data_X = np.transpose(train_data['X_2_train'], (3, 2, 1, 0))
 train_data_Y = np.transpose(train_data['Y_train'], (2, 1, 0))
-test_data_X = np.transpose(train_data['X_2_test'], (3, 2, 1, 0))
-test_data_Y = np.transpose(train_data['Y_test'], (2, 1, 0))
+test_data_X = np.transpose(test_data['X_2_test'], (3, 2, 1, 0))
+test_data_Y = np.transpose(test_data['Y_test'], (2, 1, 0))
 
 train_pairs = [(x, y) for x, y in zip(train_data_X, train_data_Y)]
 test_pairs = [(x, y) for x, y in zip(test_data_X, test_data_Y)]
