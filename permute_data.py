@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 import pickle
 
-root='./Datasets/'
+root='./TempData/'
 DATA_PATH = [root + 'train_data_2.mat', root + 'test_data_2.mat']
 train_data = h5py.File(DATA_PATH[0], 'r')
 test_data = h5py.File(DATA_PATH[1], 'r')
@@ -20,6 +20,6 @@ test_data_Y = np.transpose(train_data['Y_test'], (2, 1, 0))
 train_pairs = [(x, y) for x, y in zip(train_data_X, train_data_Y)]
 test_pairs = [(x, y) for x, y in zip(test_data_X, test_data_Y)]
 
-pickle.dump(train_pairs, open('./Datasets/train_data_2.pkl', 'wb+'))
-pickle.dump(test_pairs, open('./Datasets/test_data_2.pkl', 'wb+'))
+pickle.dump(train_pairs, open('./TempData/train_data_2.pkl', 'wb+'))
+pickle.dump(test_pairs, open('./TempData/test_data_2.pkl', 'wb+'))
 
