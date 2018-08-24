@@ -47,7 +47,7 @@ def gen_new_input(net_charge_f, last_phi_f=None):
 
 eng = matlab.engine.start_matlab()
 eng.addpath('./matlab_source_code')
-Vp_all = [2.7, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
+Vp_all = [2.0]#, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
 Vn_all = [0]
 USE_DL = False
 

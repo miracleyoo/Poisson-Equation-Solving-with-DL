@@ -13,7 +13,7 @@ class Config(object):
         # self.device              =
         self.LOAD_SAVED_MOD      = False
         self.TEST_ALL            = False
-        self.TRAIN_ALL           = True
+        self.TRAIN_ALL           = False
         self.SAVE_TEMP_MODEL     = True
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"

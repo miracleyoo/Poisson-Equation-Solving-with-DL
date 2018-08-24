@@ -4,6 +4,7 @@
 import os
 import scipy.io
 import pickle
+import h5py
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -24,8 +25,19 @@ def load_data(root='./Datasets/'):
 
     """
     DATA_PATH = [root+'train_data.mat', root+'test_data.mat']
-    train_data = scipy.io.loadmat(DATA_PATH[0])
-    test_data = scipy.io.loadmat(DATA_PATH[1])
+    try:
+        train_data = scipy.io.loadmat(DATA_PATH[0])
+    except NotImplementedError:
+        train_data = h5py.File(DATA_PATH[0], 'r')
+    finally:
+        print("==> Load train data successfully.")
+
+    try:
+        test_data = scipy.io.loadmat(DATA_PATH[1])
+    except NotImplementedError:
+        test_data = h5py.File(DATA_PATH[1], 'r')
+    finally:
+        print("==> Load test data successfully.")
 
     train_data = dict((key,value) for key,value in train_data.items() if key=='X_train' or key=='Y_train')
     test_data = dict((key, value) for key, value in test_data.items() if key == 'X_test' or key == 'Y_test')
