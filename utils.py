@@ -35,15 +35,14 @@ def load_data(opt, root='./Datasets/'):
         train_data = h5py.File(DATA_PATH[0], 'r')
     finally:
         print("==> Load train data successfully.")
-        print("==> shape of train_data: ", train_data.shape)
-
+        print("==> shape of train_data: ", train_data['X_2_train'].shape)
+        print("==> shape of test_data: ", train_data['Y_train'].shape)
     try:
         test_data = scipy.io.loadmat(DATA_PATH[1])
     except NotImplementedError:
         test_data = h5py.File(DATA_PATH[1], 'r')
     finally:
         print("==> Load test data successfully.")
-        print("==> shape of test_data: ", train_data.shape)
 
 
     if opt.USE_NEW_DATA:
