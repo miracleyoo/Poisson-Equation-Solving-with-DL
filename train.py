@@ -74,6 +74,7 @@ def border_loss(A, B, opt):
 
 
 def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=100):
+    best_loss = float(best_loss)
     NUM_TRAIN_PER_EPOCH = len(train_loader)
     threads = []
 
@@ -118,7 +119,7 @@ def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=1
                test_loss / opt.NUM_TEST))
         vec_dif(outputs, labels)
 
-        if pre_epoch+epoch > 0:
+        if epoch > 0:
             threads[epoch-1].join()
             best_loss = threads[epoch-1].best_loss
         threads.append(MyThread(opt, net, epoch, train_loss, best_loss, test_loss))
