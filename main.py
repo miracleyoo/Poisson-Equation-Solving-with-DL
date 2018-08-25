@@ -91,7 +91,7 @@ else:
         model_to_device(net)
     if opt.TRAIN_ALL:
         opt.NUM_TRAIN = len(allDataset)
-        net = training(opt, all_loader, test_loader, net, pre_epoch, best_loss, device)
+        net = training(opt, all_loader, test_loader, net, pre_epoch, device, best_loss)
     else:
         opt.NUM_TRAIN = len(trainDataset)
-        net = training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device)
+        net = training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss)

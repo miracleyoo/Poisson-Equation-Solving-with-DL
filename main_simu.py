@@ -49,7 +49,7 @@ eng = matlab.engine.start_matlab()
 eng.addpath('./matlab_source_code')
 Vp_all = [2.0]#, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
 Vn_all = [0]
-USE_DL = False
+USE_DL = True
 
 with Timer('init_core'):
     nx1, ny1 = eng.init_core(matlab.double(Vp_all), matlab.double(Vn_all), nargout=2)

@@ -9,12 +9,14 @@ import threading
 from torch.autograd import Variable
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
-best_loss = 100
 lock = threading.Lock()
 
 
 def save_models(opt, net, epoch, train_loss, best_loss, test_loss):
     # Save a temp model
+    train_loss = int(train_loss)
+    best_loss = int(best_loss)
+    test_loss = int(test_loss)
     if opt.SAVE_TEMP_MODEL:
         net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
 
@@ -37,10 +39,9 @@ class MyThread(threading.Thread):
         self.test_loss = test_loss
 
     def run(self):
-        global best_loss
         lock.acquire()
         try:
-            best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss, self.test_loss)
+            self.best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss, self.test_loss)
         finally:
             lock.release()
 
@@ -72,7 +73,7 @@ def border_loss(A, B, opt):
     return vec_sim + 2 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
 
 
-def training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device):
+def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=100):
     NUM_TRAIN_PER_EPOCH = len(train_loader)
     threads = []
 
@@ -117,6 +118,9 @@ def training(opt, train_loader, test_loader, net, pre_epoch, best_loss, device):
                test_loss / opt.NUM_TEST))
         vec_dif(outputs, labels)
 
+        if pre_epoch+epoch > 0:
+            threads[epoch-1].join()
+            best_loss = threads[epoch-1].best_loss
         threads.append(MyThread(opt, net, epoch, train_loss, best_loss, test_loss))
         threads[epoch].start()
     print('==> Training Finished.')

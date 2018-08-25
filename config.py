@@ -10,8 +10,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 class Config(object):
     def __init__(self):
         self.USE_CUDA            = torch.cuda.is_available()
-        # self.device              =
-        self.LOAD_SAVED_MOD      = False
+        self.LOAD_SAVED_MOD      = True
         self.TEST_ALL            = False
         self.TRAIN_ALL           = False
         self.SAVE_TEMP_MODEL     = True
@@ -38,6 +37,6 @@ class Config(object):
         self.LENGTH              = 41
         self.WIDTH               = 9
 
-        self.BATCH_SIZE          = 32
-        self.TEST_BATCH_SIZE     = 128
+        self.BATCH_SIZE          = 256
+        self.TEST_BATCH_SIZE     = 256
         self.NUM_WORKERS         = 4
