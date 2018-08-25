@@ -14,6 +14,8 @@ from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, mirac
 
 app = Flask(__name__)
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
 
 class Timer(object):
     def __init__(self, name=None):
