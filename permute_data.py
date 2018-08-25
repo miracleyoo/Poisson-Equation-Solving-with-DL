@@ -17,8 +17,8 @@ train_data_Y = np.transpose(train_data['Y_train'], (2, 1, 0))
 test_data_X = np.transpose(test_data['X_2_test'], (3, 2, 1, 0))
 test_data_Y = np.transpose(test_data['Y_test'], (2, 1, 0))
 
-train_pairs = [(x, y) for x, y in zip(train_data_X, train_data_Y)]
-test_pairs = [(x, y) for x, y in zip(test_data_X, test_data_Y)]
+train_pairs = [(x, y.T.reshape(-1)) for x, y in zip(train_data_X, train_data_Y)]
+test_pairs = [(x, y.T.reshape(-1)) for x, y in zip(test_data_X, test_data_Y)]
 
 pickle.dump(train_pairs, open('./TempData/train_data_2.pkl', 'wb+'))
 pickle.dump(test_pairs, open('./TempData/test_data_2.pkl', 'wb+'))
