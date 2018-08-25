@@ -6,7 +6,10 @@ import numpy as np
 import torch
 import time
 import os
+import sys
 from torch.autograd import Variable
+
+sys.path.append('..')
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 
 app = Flask(__name__)
