@@ -21,7 +21,7 @@ import numpy as np
 
 sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('./matlab_source_code')
-url = "http://172.19.0.7:5000/get-output"
+url = "http://localhost:5000/get-output"
 
 
 class Timer(object):
