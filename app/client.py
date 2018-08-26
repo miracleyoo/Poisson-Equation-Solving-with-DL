@@ -1,11 +1,11 @@
 # coding: utf-8
 # Author: Zhongyang Zhang
-# client.js （每次想要操作的时候就本地执行这个，会向服务器请求数据）
 
 import time
 import pickle
 import matlab.engine
 import sys
+import os
 from global_val import *
 import requests
 import json
@@ -19,7 +19,9 @@ import numpy as np
 
 # print(output.text)
 
+sys.path.append(os.path.dirname(sys.path[0]))
 sys.path.append('./matlab_source_code')
+url = "http://172.19.0.7:5000/get-output"
 
 
 class Timer(object):
@@ -89,7 +91,7 @@ for a in range(len(Vp_all)):
             with Timer('dl_solver'):
                 inputs = {'data': json.dumps(gen_input(net_charge).tolist())}
                 phi = np.array(
-                    json.loads(requests.post("http://127.0.0.1:5000/get-output", data=inputs).text))
+                    json.loads(requests.post(url, data=inputs).text))
             simu_res.append((gen_new_input(net_charge, last_phi_f=phi_backup), phi))
             phi = matlab.double(phi.squeeze().reshape(41, 9).T.tolist())
             fx, fy = eng.fxy_core(phi, nargout=2)
@@ -107,7 +109,7 @@ for a in range(len(Vp_all)):
                 with Timer('dl_solver'):
                     inputs = {'data': json.dumps(gen_input(net_charge).tolist())}
                     phi = np.array(
-                        json.loads(requests.post("http://127.0.0.1:5000/get-output", data=inputs).text))
+                        json.loads(requests.post(url, data=inputs).text))
                 simu_res.append((gen_new_input(net_charge, last_phi_f=phi_backup), phi))
                 phi = matlab.double(phi.squeeze().reshape(41, 9).T.tolist())
                 fx, fy = eng.fxy_core(phi, nargout=2)

@@ -1,8 +1,9 @@
-# server.js （server一直启动， 挂在服务器上）
+# coding: utf-8
+# Author: Zhongyang Zhang
+
 from flask import Flask
 from flask import request
 import json
-import numpy as np
 import torch
 import time
 import os
@@ -102,5 +103,9 @@ def get_output():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True
+    )
 
