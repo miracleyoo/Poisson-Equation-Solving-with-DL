@@ -24,7 +24,6 @@ def save_models(opt, net, epoch, train_loss, best_loss, test_loss):
     if test_loss / opt.NUM_TEST < best_loss:
         best_loss = test_loss / opt.NUM_TEST
         net.save(epoch, train_loss / opt.NUM_TRAIN, "best_model.dat")
-        print("==> Best Model Renewed.")
     return best_loss
 
 
@@ -121,7 +120,10 @@ def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=1
 
         if epoch > 0:
             threads[epoch-1].join()
-            best_loss = threads[epoch-1].best_loss
+            best_loss_temp = threads[epoch-1].best_loss
+            if best_loss_temp != best_loss:
+                print("==> Best Model Renewed. Best loss: {}".format(best_loss_temp))
+            best_loss = best_loss_temp
         threads.append(MyThread(opt, net, epoch, train_loss, best_loss, test_loss))
         threads[epoch].start()
     print('==> Training Finished.')

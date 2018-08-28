@@ -17,7 +17,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def model_to_device(model):
     # Data Parallelism
     if torch.cuda.device_count() > 1:
-        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        print("==> Using", torch.cuda.device_count(), "GPUs.")
         model = nn.DataParallel(model)
 
     model.to(device)
@@ -86,7 +86,10 @@ else:
     pre_epoch = 0
     best_loss = 100
     if opt.LOAD_SAVED_MOD:
-        net, pre_epoch, best_loss = load_model(net, "temp_model.dat")
+        try:
+            net, pre_epoch, best_loss = load_model(net, "temp_model.dat")
+        except FileNotFoundError:
+            model_to_device(net)
     else:
         model_to_device(net)
     if opt.TRAIN_ALL:
