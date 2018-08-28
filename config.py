@@ -12,7 +12,7 @@ class Config(object):
         self.USE_CUDA            = torch.cuda.is_available()
         self.LOAD_SAVED_MOD      = True
         self.TEST_ALL            = False
-        self.TRAIN_ALL           = True
+        self.TRAIN_ALL           = False
         self.SAVE_TEMP_MODEL     = True
         self.USE_NEW_DATA        = True
         self.NUM_CHANNEL         = 2
