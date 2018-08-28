@@ -12,7 +12,7 @@ class POISSON(Dataset):
         self.opt = opt
 
     def __len__(self):
-        return len(self.data)
+        return 512#len(self.data)
 
     def __getitem__(self, index):
         input, label = self.data[index]
