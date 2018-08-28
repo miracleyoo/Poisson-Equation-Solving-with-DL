@@ -24,7 +24,7 @@ def save_models(opt, net, epoch, train_loss, best_loss, test_loss):
     if test_loss / opt.NUM_TEST < best_loss:
         best_loss = test_loss / opt.NUM_TEST
         net.save(epoch, train_loss / opt.NUM_TRAIN, "best_model.dat")
-
+        print("==> Best Model Renewed.")
     return best_loss
 
 
