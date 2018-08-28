@@ -14,9 +14,9 @@ lock = threading.Lock()
 
 def save_models(opt, net, epoch, train_loss, best_loss, test_loss):
     # Save a temp model
-    train_loss = int(train_loss)
-    best_loss = int(best_loss)
-    test_loss = int(test_loss)
+    train_loss = float(train_loss)
+    best_loss = float(best_loss)
+    test_loss = float(test_loss)
     if opt.SAVE_TEMP_MODEL:
         net.save(epoch, train_loss / opt.NUM_TRAIN, "temp_model.dat")
 
