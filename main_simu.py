@@ -26,7 +26,7 @@ class Timer(object):
 
 
 def gen_input(net_charge_f):
-    net_charge_f = np.array(net_charge_f).reshape(-1).reshape(41, 9).T
+    # net_charge_f = np.array(net_charge_f).reshape(-1).reshape(41, 9).T
     net_charge_f = np.array(net_charge_f)[np.newaxis, :]/1e23
     border_cond = np.zeros((1, int(ny1), int(nx1)))
     border_cond[0, :, 0] = Vp
@@ -49,7 +49,7 @@ def gen_new_input(net_charge_f, last_phi_f=None):
 
 eng = matlab.engine.start_matlab()
 eng.addpath('./matlab_source_code')
-Vp_all = [0, 2.0, 2.5, 2.7, 1.8, 1.5, 1.2, 0.8, 0.4, 0]#, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
+Vp_all = [1.8, 1.5, 1.2, 0.8, 0.4, 0] #2.0, 2.5, 2.7, #, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
 Vn_all = [0]
 USE_DL = True
 

@@ -77,8 +77,19 @@ def folder_init(opt):
     """
     Initialize folders required
     """
-    if not os.path.exists('source'): os.mkdir('source')
-    if not os.path.exists('source/reference'): os.mkdir('source/reference')
-    if not os.path.exists(opt.NET_SAVE_PATH): os.mkdir(opt.NET_SAVE_PATH)
-    if not os.path.exists('./source/summary/'): os.mkdir('./source/summary/')
-    if not os.path.exists('./source/val_results/'): os.mkdir('./source/val_results/')
+    if not os.path.exists('source'):
+        os.mkdir('source')
+    if not os.path.exists('source/reference'):
+        os.mkdir('source/reference')
+    if not os.path.exists('./source/summary/'):
+        os.mkdir('./source/summary/')
+    if not os.path.exists('./source/val_results/'):
+        os.mkdir('./source/val_results/')
+    if not os.path.exists('source/simulation_res'):
+        os.mkdir('source/simulation_res')
+    if not os.path.exists('source/simulation_res/intermediate_file'):
+        os.mkdir('source/simulation_res/intermediate_file')
+    if not os.path.exists('source/simulation_res/train_data'):
+        os.mkdir('source/simulation_res/train_data')
+    if not os.path.exists(opt.NET_SAVE_PATH):
+        os.mkdir(opt.NET_SAVE_PATH)
