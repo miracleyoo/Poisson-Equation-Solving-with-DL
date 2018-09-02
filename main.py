@@ -6,6 +6,7 @@ from utils import *
 from data_loader import *
 from train import *
 from config import Config
+from tensorboardX import SummaryWriter
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 import pickle
 import torch
@@ -14,6 +15,9 @@ warnings.filterwarnings("ignore")
 
 opt = Config()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+net = None
+allDataset = None
+all_loader = None
 
 
 def model_to_device(model):
@@ -45,7 +49,6 @@ def load_model(model, model_type):
 
 folder_init(opt)
 train_pairs, test_pairs = load_data(opt, './TempData/')
-all_pairs = load_all_data('./TempData/')
 
 trainDataset = POISSON(train_pairs, opt)
 train_loader = DataLoader(dataset=trainDataset, batch_size=opt.BATCH_SIZE, shuffle=True, num_workers=opt.NUM_WORKERS,
@@ -55,9 +58,12 @@ testDataset = POISSON(test_pairs, opt)
 test_loader = DataLoader(dataset=testDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=False,
                          num_workers=opt.NUM_WORKERS, drop_last=False)
 
-allDataset = POISSON(all_pairs, opt)
-all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=True,
-                        num_workers=opt.NUM_WORKERS, drop_last=False)
+if opt.TRAIN_ALL or opt.TEST_ALL:
+    train_pairs.extend(test_pairs)
+    all_pairs = train_pairs
+    allDataset = POISSON(all_pairs, opt)
+    all_loader = DataLoader(dataset=allDataset, batch_size=opt.TEST_BATCH_SIZE, shuffle=True,
+                            num_workers=opt.NUM_WORKERS, drop_last=False)
 
 print("==> All datasets are generated successfully.")
 
@@ -72,11 +78,13 @@ try:
         net = miracle_lineconv_net.MiracleLineConvNet(opt)
 except KeyError('Your model is not found.'):
     exit(0)
-finally:
+else:
     print("==> Model initialized successfully.")
 
-
 opt.NUM_TEST = len(testDataset)
+writer = SummaryWriter(opt.SUMMARY_PATH)
+dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 9, 41))
+writer.add_graph(net, dummy_input)
 
 if opt.TEST_ALL:
     results = []
@@ -96,7 +104,7 @@ else:
         model_to_device(net)
     if opt.TRAIN_ALL:
         opt.NUM_TRAIN = len(allDataset)
-        net = training(opt, all_loader, test_loader, net, pre_epoch, device, best_loss)
+        net = training(opt, writer, all_loader, test_loader, net, pre_epoch, device, best_loss)
     else:
         opt.NUM_TRAIN = len(trainDataset)
-        net = training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss)
+        net = training(opt, writer, train_loader, test_loader, net, pre_epoch, device, best_loss)

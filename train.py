@@ -8,7 +8,7 @@ import numpy as np
 import threading
 from torch.autograd import Variable
 from tqdm import tqdm
-from tensorboardX import SummaryWriter
+
 lock = threading.Lock()
 
 
@@ -40,7 +40,8 @@ class MyThread(threading.Thread):
     def run(self):
         lock.acquire()
         try:
-            self.best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss, self.test_loss)
+            self.best_loss = save_models(self.opt, self.net, self.epoch, self.train_loss, self.best_loss,
+                                         self.test_loss)
         finally:
             lock.release()
 
@@ -50,39 +51,35 @@ def cross_entropy(pred, soft_targets):
     return torch.mean(torch.sum(- soft_targets * logsoftmax(pred), 1))
 
 
-def vec_similarity(A, B):
-    return (torch.sum(torch.pow(A - B, 2))).sqrt()
+def vec_similarity(matrix_a, matrix_b):
+    return (torch.sum(torch.pow(matrix_a - matrix_b, 2))).sqrt()
 
 
-def vec_dif(A, B):
-    print("Different between preds and labels is:", torch.mean(torch.abs(A-B)).data.tolist())
+def vec_dif(matrix_a, matrix_b):
+    print("Different between preds and labels is:", torch.mean(torch.abs(matrix_a - matrix_b)).data.tolist())
 
 
-def border_loss(A, B, opt):
-    batch = len(A)
-    vec_sim = (torch.sum(torch.pow(A - B, 2))).sqrt()
+def border_loss(matrix_a, matrix_b, opt):
+    batch = len(matrix_a)
+    vec_sim = (torch.sum(torch.pow(matrix_a - matrix_b, 2))).sqrt()
     std = Variable(torch.Tensor(np.zeros([batch, opt.LENGTH, opt.WIDTH])))
     std[:, 0, :] = 1
     std[:, -1, :] = 1
-    if opt.USE_CUDA: std = std.cuda()
-    A = A.resize(batch, opt.LENGTH, opt.WIDTH)
-    B = B.resize(batch, opt.LENGTH, opt.WIDTH)
-    A_bor = A * std
-    B_bor = B * std
-    return vec_sim + 2 * (torch.sum(torch.pow(A_bor - B_bor, 2))).sqrt()
+    if opt.USE_CUDA:
+        std = std.cuda()
+    matrix_a = matrix_a.resize(batch, opt.LENGTH, opt.WIDTH)
+    matrix_b = matrix_b.resize(batch, opt.LENGTH, opt.WIDTH)
+    a_border = matrix_a * std
+    b_border = matrix_b * std
+    return vec_sim + 2 * (torch.sum(torch.pow(a_border - b_border, 2))).sqrt()
 
 
-def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=100):
+def training(opt, writer, train_loader, test_loader, net, pre_epoch, device, best_loss=100):
     best_loss = float(best_loss)
-    NUM_TRAIN_PER_EPOCH = len(train_loader)
     threads = []
 
-    writer = SummaryWriter(opt.SUMMARY_PATH)
-    dummy_input = Variable(torch.rand(opt.BATCH_SIZE, 2, 9, 41))
-    writer.add_graph(net, (dummy_input,))
-
     # WARNING: input shape: (batch, 9, 41) but output shape: (batch, 41,9)
-    optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)
+    optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE, weight_decay=opt.WEIGHT_DECAY)
 
     for epoch in range(opt.NUM_EPOCHS):
         train_loss = 0
@@ -91,7 +88,7 @@ def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=1
         net.train()
 
         print('==> Preparing Data ...')
-        for i, data in tqdm(enumerate(train_loader), desc="Training", total=NUM_TRAIN_PER_EPOCH, leave=False, unit='b'):
+        for i, data in tqdm(enumerate(train_loader), desc="Training", total=len(train_loader), leave=False, unit='b'):
             inputs, labels, *_ = data
             inputs, labels = Variable(inputs.to(device)), Variable(labels.to(device))
             optimizer.zero_grad()
@@ -114,13 +111,13 @@ def training(opt, train_loader, test_loader, net, pre_epoch, device, best_loss=1
         writer.add_scalar("Test/loss", test_loss / opt.NUM_TEST, epoch + pre_epoch)
         # Output results
         print('Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
-            % (pre_epoch + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
-               test_loss / opt.NUM_TEST))
+              % (pre_epoch + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
+                 test_loss / opt.NUM_TEST))
         vec_dif(outputs, labels)
 
         if epoch > 0:
-            threads[epoch-1].join()
-            best_loss_temp = threads[epoch-1].best_loss
+            threads[epoch - 1].join()
+            best_loss_temp = threads[epoch - 1].best_loss
             if best_loss_temp != best_loss:
                 print("==> Best Model Renewed. Best loss: {}".format(best_loss_temp))
             best_loss = best_loss_temp
@@ -165,5 +162,5 @@ def test_all(opt, all_loader, net, results, device):
         results.extend([(label, output) for label, output in zip(labels, outputs)])
 
     out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
-    print('==> Testing finished. You can find the result matrix in '+out_file)
+    print('==> Testing finished. You can find the result matrix in ' + out_file)
     return results

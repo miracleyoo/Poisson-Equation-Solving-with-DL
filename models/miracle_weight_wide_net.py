@@ -14,7 +14,8 @@ class MiracleWeightWideNet(BasicModule):
         self.model_name = "Miracle_Weight_Wide_Net"
         self.weight     = {3: 4, 5: 2, 7: 1, 9: 1}
         init_convs = [nn.Sequential(
-            nn.Conv2d(opt.NUM_CHANNEL, out_channels=16*self.weight[kernel_size],
+            nn.Conv2d(in_channels=opt.NUM_CHANNEL,
+                      out_channels=16*self.weight[kernel_size],
                       kernel_size=kernel_size, stride=1,
                       padding=(kernel_size-1)//2),
             nn.BatchNorm2d(16 * self.weight[kernel_size]),
@@ -28,19 +29,12 @@ class MiracleWeightWideNet(BasicModule):
             nn.Conv2d(128, 128, 3, stride=1, padding=1),
             nn.BatchNorm2d(128),
             nn.LeakyReLU(),
-            # nn.MaxPool2d(3, 1, padding=1),
-            # nn.Conv2d(128, 128, 3, stride=1, padding=1),
-            # nn.BatchNorm2d(128),
-            # nn.LeakyReLU(),
-            # nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(128, 256, 3, stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.LeakyReLU(),
-            # nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(256, 512, 3, stride=1, padding=1),
             nn.BatchNorm2d(512),
             nn.LeakyReLU(),
-            # nn.MaxPool2d(3, 1, padding=1)
         )
         self.fc = nn.Sequential(
             nn.Linear((9-3*2*0) * (41-3*2*0) * 512, opt.LINER_HID_SIZE),

@@ -11,21 +11,21 @@ torch.manual_seed(1)
 class MiracleLineConvNet(BasicModule):
     def __init__(self, opt):
         super(MiracleLineConvNet, self).__init__(opt)
-        # BasicModule.__init__(opt)
         self.model_name = "Miracle_Line_Conv_Net"
-        self.weight     = {3: 4, 5: 2, 7: 1, 9: 1}
+        self.weight = {3: 4, 5: 2, 7: 1, 9: 1}
         init_convs = [nn.Sequential(
-            nn.Conv2d(in_channels=2, out_channels=16*self.weight[kernel_size],
+            nn.Conv2d(in_channels=opt.NUM_CHANNEL,
+                      out_channels=16 * self.weight[kernel_size],
                       kernel_size=kernel_size, stride=1,
-                      padding=(kernel_size-1)//2),
-            nn.BatchNorm2d(16*self.weight[kernel_size]),
+                      padding=(kernel_size - 1) // 2),
+            nn.BatchNorm2d(16 * self.weight[kernel_size]),
             nn.LeakyReLU(),
             nn.MaxPool2d(3, 1, padding=1)
         ) for kernel_size in (3, 5)]
 
         self.lineconv = nn.Sequential(
-            nn.Conv2d(in_channels=2, out_channels=32,
-                    kernel_size=(1, 9), padding=(0, 4)),
+            nn.Conv2d(in_channels=opt.NUM_CHANNEL, out_channels=32,
+                      kernel_size=(1, 9), padding=(0, 4)),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(),
             nn.MaxPool2d(3, 1, padding=1)
@@ -37,22 +37,15 @@ class MiracleLineConvNet(BasicModule):
             nn.Conv2d(128, 128, 3, stride=1, padding=1),
             nn.BatchNorm2d(128),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
-            nn.Conv2d(128, 128, 3, stride=1, padding=1),
-            nn.BatchNorm2d(128),
-            nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(128, 256, 3, stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1),
             nn.Conv2d(256, 512, 3, stride=1, padding=1),
             nn.BatchNorm2d(512),
             nn.LeakyReLU(),
-            nn.MaxPool2d(3, 1, padding=1)
         )
         self.fc = nn.Sequential(
-            nn.Linear((9-4*2*0) * (41-4*2*0) * 512, opt.LINER_HID_SIZE),
+            nn.Linear((9 - 4 * 2 * 0) * (41 - 4 * 2 * 0) * 512, opt.LINER_HID_SIZE),
             nn.BatchNorm1d(opt.LINER_HID_SIZE),
             nn.LeakyReLU(),
             nn.Dropout(0.5),

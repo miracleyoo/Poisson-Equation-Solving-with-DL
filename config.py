@@ -4,7 +4,7 @@
 import torch
 import os
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
 
 
 class Config(object):
@@ -32,7 +32,8 @@ class Config(object):
 
         self.NUM_EPOCHS          = 100
         self.NUM_CLASSES         = 369
-        self.LEARNING_RATE       = 0.001
+        self.LEARNING_RATE       = 1e-3
+        self.WEIGHT_DECAY        = 1e-3
         self.LINER_HID_SIZE      = 1024
         self.LENGTH              = 41
         self.WIDTH               = 9
