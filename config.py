@@ -40,4 +40,4 @@ class Config(object):
 
         self.BATCH_SIZE          = 256
         self.TEST_BATCH_SIZE     = 256
-        self.NUM_WORKERS         = 4
+        self.NUM_WORKERS         = 0
