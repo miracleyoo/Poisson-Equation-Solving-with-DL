@@ -13,7 +13,6 @@ class MeanRepeat(nn.Module):
         super(MeanRepeat, self).__init__()
 
     def forward(self, x):
-        print(x.shape)
         x = x.mean(2).unsqueeze_(2).repeat(1, 1, 9, 1)
         return x
 
