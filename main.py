@@ -9,6 +9,8 @@ from config import Config
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 import pickle
 import torch
+import warnings
+warnings.filterwarnings("ignore")
 
 opt = Config()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

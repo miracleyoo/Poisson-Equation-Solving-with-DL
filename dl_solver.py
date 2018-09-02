@@ -4,6 +4,7 @@
 import torch
 import os
 import threading
+import numpy as np
 from torch.autograd import Variable
 from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, miracle_lineconv_net
 lock = threading.Lock()
@@ -53,6 +54,7 @@ class Config(object):
         self.LENGTH              = 41
         self.WIDTH               = 9
         self.NUM_CLASSES         = 369
+        self.LEARNING_RATE       = 0.001
 
 
 def dl_init(use_online_training=False):

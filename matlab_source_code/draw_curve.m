@@ -1,4 +1,4 @@
-function []=draw_curve(voltage, suffix, ti, current_p, current_n)
+function [slope]=draw_curve(voltage, suffix, ti, current_p, current_n)
 title_pic = sprintf("Vp=%.2f,Vn=0 Simulation Result, using %s method",voltage,suffix);
 x1=1:ti/10;
 temp_1=current_p(ti-ti/10+1:ti,1);
@@ -14,10 +14,7 @@ plot(x1,y2(1,1)*x1+y2(1,2))
 hold on
 plot(current_n(ti-ti/10+1:ti,1))
 title(title_pic)
-% disp(title_pic)
-fprintf('Slope is %f.\n',(y1(1)+y2(1))/2);
+slope = (y1(1)+y2(1))/2;
+fprintf('Slope is %f.\n', slope);
 end
 
-
-% b1=regress(y1,x1);
-% b2=regress(y2,x1);

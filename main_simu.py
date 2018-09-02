@@ -7,8 +7,9 @@ import matlab.engine
 import sys
 from global_val import *
 from dl_solver import *
-
 sys.path.append('./matlab_source_code')
+# tsteps = 100
+# time_elapsed = []
 
 
 class Timer(object):
@@ -20,9 +21,10 @@ class Timer(object):
 
     def __exit__(self, type, value, traceback):
         pass
-        # if self.name:
+        # if self.name == "pn_poisson_v5":
         #     print('==> [%s]:\t' % self.name, end='')
-        # print('Elapsed Time: %s (s)' % (time.time() - self.tstart))
+        #     time_elapsed.append(time.time() - self.tstart)
+        #     print('Elapsed Time: %s (s)' % time_elapsed[-1]) #(time.time() - self.tstart))
 
 
 def gen_input(net_charge_f):
@@ -49,7 +51,7 @@ def gen_new_input(net_charge_f, last_phi_f=None):
 
 eng = matlab.engine.start_matlab()
 eng.addpath('./matlab_source_code')
-Vp_all = [1.8, 1.5, 1.2, 0.8, 0.4, 0] #2.0, 2.5, 2.7, #, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
+Vp_all = [0.05, 0.35, 0.85, 1.25, 1.65, 2.05, 2.35, 2.65]#, 1.8, 1.5, 1.2, 0.8, 0.4, 0] #2.0, 2.5, 2.7, #, 1.2, 0.5, 0.8, 1, 1.6, 1.8, 2.25, 2.7]
 Vn_all = [0]
 USE_DL = True
 
@@ -87,6 +89,7 @@ for a in range(len(Vp_all)):
             with Timer('pn_poisson_v5'):
                 fx, fy, phi = eng.pn_poisson_v5(phi, save_name, nargout=3)
             simu_res.append((gen_new_input(net_charge, last_phi_f=phi_backup), phi))
+            online_training(gen_input(net_charge), net, opt, np.array(phi))#.T.reshape(41, 9))
 
         for ti in range(0, tsteps):
             with Timer('iteration_core'):
@@ -104,6 +107,7 @@ for a in range(len(Vp_all)):
                 with Timer('pn_poisson_v5'):
                     fx, fy, phi = eng.pn_poisson_v5(phi, save_name, nargout=3)
                 simu_res.append((gen_new_input(net_charge, last_phi_f=phi_backup), phi))
+                online_training(gen_input(net_charge), net, opt, np.array(phi))#.T.reshape(41, 9))
 
             with Timer('statistics_core'):
                 eng.statistics_core(float(ti + 1), save_name, nargout=0)
@@ -111,3 +115,4 @@ for a in range(len(Vp_all)):
             print('==> progress: %d finished.' % (ti + 1))
         print("==> Simulation Finished(Vn=%f,Vp=%f). %s file saved." % (Vn, Vp, save_name))
         pickle.dump(simu_res, open('./source/simulation_res/train_data/' + save_prefix + '.pkl', 'wb+'))
+# print("Average time: {} (s)".format(sum(time_elapsed)/100))
