@@ -8,11 +8,22 @@ from .BasicModule import BasicModule
 torch.manual_seed(1)
 
 
+class MeanRepeat(nn.Module):
+    def __init__(self):
+        super(MeanRepeat, self).__init__()
+
+    def forward(self, x):
+        print(x.shape)
+        x = x.mean(2).unsqueeze_(2).repeat(1, 1, 9, 1)
+        return x
+
+
 class MiracleLineConvNet(BasicModule):
     def __init__(self, opt):
         super(MiracleLineConvNet, self).__init__(opt)
         self.model_name = "Miracle_Line_Conv_Net"
         self.weight = {3: 4, 5: 2, 7: 1, 9: 1}
+        self.smooth = MeanRepeat()
         init_convs = [nn.Sequential(
             nn.Conv2d(in_channels=opt.NUM_CHANNEL,
                       out_channels=16 * self.weight[kernel_size],
@@ -24,8 +35,11 @@ class MiracleLineConvNet(BasicModule):
         ) for kernel_size in (3, 5)]
 
         self.lineconv = nn.Sequential(
+            self.smooth,
             nn.Conv2d(in_channels=opt.NUM_CHANNEL, out_channels=32,
-                      kernel_size=(1, 9), padding=(0, 4)),
+                      kernel_size=3, padding=1),
+            # nn.Conv2d(in_channels=opt.NUM_CHANNEL, out_channels=32,
+            #           kernel_size=(1, 9), padding=(0, 4)),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(),
             nn.MaxPool2d(3, 1, padding=1)
