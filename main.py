@@ -11,6 +11,7 @@ from models import miracle_net, miracle_wide_net, miracle_weight_wide_net, mirac
 import pickle
 import torch
 import warnings
+
 warnings.filterwarnings("ignore")
 
 opt = Config()
@@ -25,8 +26,7 @@ def model_to_device(model):
     if torch.cuda.device_count() > 1:
         print("==> Using", torch.cuda.device_count(), "GPUs.")
         model = nn.DataParallel(model)
-    else:
-        model.to(device)
+    model.to(device)
     return model
 
 
@@ -99,9 +99,9 @@ else:
         try:
             net, pre_epoch, best_loss = load_model(net, "temp_model.dat")
         except FileNotFoundError:
-            model_to_device(net)
+            net = model_to_device(net)
     else:
-        model_to_device(net)
+        net = model_to_device(net)
     if opt.TRAIN_ALL:
         opt.NUM_TRAIN = len(allDataset)
         net = training(opt, writer, all_loader, test_loader, net, pre_epoch, device, best_loss)

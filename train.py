@@ -107,14 +107,17 @@ def training(opt, writer, train_loader, test_loader, net, pre_epoch, device, bes
         # Start testing
         test_loss = testing(opt, test_loader, net, device)
 
+        # Add summary to tensorboard
         writer.add_scalar("Train/loss", train_loss / opt.NUM_TRAIN, epoch + pre_epoch)
         writer.add_scalar("Test/loss", test_loss / opt.NUM_TEST, epoch + pre_epoch)
+
         # Output results
         print('Epoch [%d/%d], Train Loss: %.4f Test Loss: %.4f'
               % (pre_epoch + epoch + 1, opt.NUM_EPOCHS, train_loss / opt.NUM_TRAIN,
                  test_loss / opt.NUM_TEST))
         vec_dif(outputs, labels)
 
+        # Save the model
         if epoch > 0:
             threads[epoch - 1].join()
             best_loss_temp = threads[epoch - 1].best_loss
