@@ -27,7 +27,7 @@ def model_to_device(model, device):
     return model
 
 
-def load_model(opt, model, device, model_type):
+def load_model(model, device, model_type):
     print('==> Now using ' + opt.MODEL + '_' + opt.PROCESS_ID)
     print('==> Loading model ...')
 
@@ -96,7 +96,7 @@ def main():
     # Start training or testing
     if opt.TEST_ALL:
         results = []
-        net, *_ = load_model(opt, net, device, "best_model.dat")
+        net, *_ = load_model(net, device, "best_model.dat")
         results = test_all(opt, all_loader, net, results, device)
         out_file = './source/val_results/' + opt.MODEL + '_' + opt.PROCESS_ID + '_results.pkl'
         pickle.dump(results, open(out_file, 'wb+'))
@@ -105,7 +105,7 @@ def main():
         best_loss = 100
         if opt.LOAD_SAVED_MOD:
             try:
-                net, pre_epoch, best_loss = load_model(opt, net, device, "temp_model.dat")
+                net, pre_epoch, best_loss = load_model(net, device, "temp_model.dat")
             except FileNotFoundError:
                 net = model_to_device(net, device)
         else:
@@ -118,16 +118,25 @@ def main():
             _ = training(opt, writer, train_loader, test_loader, net, pre_epoch, device, best_loss)
 
 
+def str2bool(b):
+    if b.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif b.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 if __name__ == '__main__':
     # Options
     parser = argparse.ArgumentParser(description='Training')
-    parser.add_argument('-lsm', '--LOAD_SAVED_MOD', type=bool,
+    parser.add_argument('-lsm', '--LOAD_SAVED_MOD', type=str2bool,
                         help='If you want to load saved model')
-    parser.add_argument('-und', '--USE_NEW_DATA', type=bool,
+    parser.add_argument('-und', '--USE_NEW_DATA', type=str2bool,
                         help='If you want to use new data')
-    parser.add_argument('-tra', '--TRAIN_ALL',  type=bool,
+    parser.add_argument('-tra', '--TRAIN_ALL',  type=str2bool,
                         help='If you want to train full data(including test data)')
-    parser.add_argument('-tea', '--TEST_ALL', type=bool,
+    parser.add_argument('-tea', '--TEST_ALL', type=str2bool,
                         help='If you want to test full data')
     parser.add_argument('-wd', '--WEIGHT_DECAY', type=float,
                         help='Weight decay of L2 regularization')
@@ -141,10 +150,12 @@ if __name__ == '__main__':
                         help='Width of the matrix')
 
     args = parser.parse_args()
+    print(args)
     opt = Config()
     for k, v in vars(args).items():
         if v is not None and hasattr(opt, k):
             setattr(opt, k, v)
+            print(k, v, getattr(opt, k))
     if args.GPU_INDEX:
         os.environ["CUDA_VISIBLE_DEVICES"] = args.GPU_INDEX
     main()

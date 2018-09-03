@@ -8,6 +8,7 @@ import pickle
 import h5py
 import warnings
 warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 def load_data(opt, root='./Datasets/'):
