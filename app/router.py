@@ -1,3 +1,7 @@
+# coding: utf-8
+# Author: Zhongyang Zhang
+# Email : mirakuruyoo@gmail.com
+
 import os
 import sys
 from flask import Flask

@@ -1,5 +1,6 @@
 # coding: utf-8
 # Author: Zhongyang Zhang
+# Email : mirakuruyoo@gmail.com
 
 import torch
 import torch.nn as nn
@@ -19,6 +20,10 @@ class MeanRepeat(nn.Module):
 
 class MiracleLineConvNet(BasicModule):
     def __init__(self, opt):
+        """
+
+        :rtype:
+        """
         super(MiracleLineConvNet, self).__init__(opt)
         self.model_name = "Miracle_Line_Conv_Net"
         self.weight = {3: 4, 5: 2, 7: 1, 9: 1}

@@ -1,5 +1,6 @@
 # coding: utf-8
 # Author: Zhongyang Zhang
+# Email : mirakuruyoo@gmail.com
 
 import h5py
 import numpy as np

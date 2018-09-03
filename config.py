@@ -1,5 +1,6 @@
 # coding: utf-8
 # Author: Zhongyang Zhang
+# Email : mirakuruyoo@gmail.com
 
 import torch
 import os
@@ -14,18 +15,17 @@ class Config(object):
         self.TEST_ALL            = False
         self.TRAIN_ALL           = False
         self.SAVE_TEMP_MODEL     = True
-        self.USE_NEW_DATA        = True
+        self.USE_NEW_DATA        = False
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.MODEL               = 'MiracleLineConvNet'#'MiracleWeightWideNet'
+        self.MODEL               = 'MiracleLineConvNet'# 'MiracleWeightWideNet'
         self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1-NEW_GEN'
         if self.TRAIN_ALL:
             self.PROCESS_ID += '_TRAIN_ALL'
         self.SUMMARY_PATH        = "./source/summary/"+self.MODEL+'_'+self.PROCESS_ID+'_' +\
                                    str(self.NUM_CHANNEL)+'CHANNEL/'
 
-        self.TRAINDATARATIO      = 0.7
-        self.PIC_SIZE            = 256
+        self.TRAIN_DATA_RATIO    = 0.7
         self.NUM_TEST            = 0
         self.NUM_TRAIN           = 0
         self.TOP_NUM             = 1

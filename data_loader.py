@@ -1,5 +1,6 @@
 # coding: utf-8
 # Author: Zhongyang Zhang
+# Email : mirakuruyoo@gmail.com
 
 import torch
 from torch.utils.data import Dataset
@@ -15,5 +16,5 @@ class POISSON(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        input, label = self.data[index]
-        return torch.from_numpy(input).float(), torch.from_numpy(label).float()#.astype(np.float32)
+        inputs, label = self.data[index]
+        return torch.from_numpy(inputs).float(), torch.from_numpy(label).float()
