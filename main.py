@@ -13,6 +13,7 @@ import pickle
 import torch
 import argparse
 import warnings
+import os
 
 warnings.filterwarnings("ignore")
 
@@ -36,9 +37,9 @@ def load_model(opt, model, device, model_type):
         os.mkdir(net_save_prefix)
     if os.path.exists(temp_model_name):
         model, PRE_EPOCH, best_loss = model.load(temp_model_name)
-        print("Load existing model: %s" % temp_model_name)
+        print("==> Load existing model: %s" % temp_model_name)
     else:
-        raise FileNotFoundError("The model you want to load doesn't exist!")
+        raise FileNotFoundError("==> The model you want to load doesn't exist!")
     model_to_device(model, device)
     return model, PRE_EPOCH, best_loss
 
@@ -82,7 +83,7 @@ def main():
             net = miracle_net.MiracleNet(opt)
         elif opt.MODEL == 'MiracleLineConvNet':
             net = miracle_lineconv_net.MiracleLineConvNet(opt)
-    except KeyError('Your model is not found.'):
+    except KeyError('==> Your model is not found.'):
         exit(0)
     else:
         print("==> Model initialized successfully.")
@@ -136,10 +137,14 @@ if __name__ == '__main__':
                         help='Length of the matrix')
     parser.add_argument('-w', '--WIDTH', type=float,
                         help='Width of the matrix')
+    parser.add_argument('-gi', '--GPU_INDEX', type=str,
+                        help='Width of the matrix')
+
     args = parser.parse_args()
-    print(args)
     opt = Config()
     for k, v in vars(args).items():
-        if v is not None:
+        if v is not None and hasattr(opt, k):
             setattr(opt, k, v)
+    if args.GPU_INDEX:
+        os.environ["CUDA_VISIBLE_DEVICES"] = args.GPU_INDEX
     main()
