@@ -8,7 +8,7 @@ addpath ../source/simulation_res/intermediate_file/
 % ivs = containers.Map;
 vs = [];
 ivs = [];
-ML_IV = true;
+ML_IV = false;
 
 if ML_IV
     filenames = dir('../source/simulation_res/intermediate_file/');
@@ -43,7 +43,7 @@ end
 ivs = ivs(id);
 % figure
 hold on;
-plot(vs,ivs,'r:','LineWidth',2);
+plot(vs,ivs,'LineWidth',2);
 ylim([-1 200])
 title(pic_title);
 disp(ivs);

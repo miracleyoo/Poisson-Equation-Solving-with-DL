@@ -25,8 +25,8 @@ def model_to_device(model):
     if torch.cuda.device_count() > 1:
         print("==> Using", torch.cuda.device_count(), "GPUs.")
         model = nn.DataParallel(model)
-
-    model.to(device)
+    else:
+        model.to(device)
     return model
 
 
