@@ -18,7 +18,7 @@ class Config(object):
         self.USE_NEW_DATA        = True
         self.NUM_CHANNEL         = 2
         self.NET_SAVE_PATH       = "./source/trained_net/"
-        self.MODEL               = 'MiracleLineConvNet'# 'MiracleWeightWideNet'
+        self.MODEL               = 'MiracleWeightWideNet'
         self.PROCESS_ID          = 'PADDING_LOSS1-2_WEI4-2-1-1-NEW_GEN'
         if self.TRAIN_ALL:
             self.PROCESS_ID += '_TRAIN_ALL'
@@ -38,6 +38,6 @@ class Config(object):
         self.LENGTH              = 41
         self.WIDTH               = 9
 
-        self.BATCH_SIZE          = 256
-        self.TEST_BATCH_SIZE     = 256
+        self.BATCH_SIZE          = 512
+        self.TEST_BATCH_SIZE     = 512
         self.NUM_WORKERS         = 0

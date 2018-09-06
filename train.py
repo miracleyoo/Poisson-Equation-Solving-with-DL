@@ -80,7 +80,7 @@ def training(opt, writer, train_loader, test_loader, net, pre_epoch, device, bes
     threads = []
 
     # WARNING: input shape: (batch, 9, 41) but output shape: (batch, 41,9)
-    optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE, weight_decay=opt.WEIGHT_DECAY)
+    optimizer = torch.optim.Adam(net.parameters(), lr=opt.LEARNING_RATE)#, weight_decay=opt.WEIGHT_DECAY)
 
     for epoch in range(opt.NUM_EPOCHS):
         train_loss = 0
@@ -125,7 +125,7 @@ def training(opt, writer, train_loader, test_loader, net, pre_epoch, device, bes
             if best_loss_temp != best_loss:
                 print("==> Best Model Renewed. Best loss: {}".format(best_loss_temp))
             best_loss = best_loss_temp
-        threads.append(MyThread(opt, net, epoch, train_loss, best_loss, test_loss))
+        threads.append(MyThread(opt, net.module, pre_epoch + epoch + 1, train_loss, best_loss, test_loss))
         threads[epoch].start()
     print('==> Training Finished.')
     return net
