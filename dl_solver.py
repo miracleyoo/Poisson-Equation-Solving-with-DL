@@ -52,7 +52,7 @@ class Config(object):
         self.NET_SAVE_PATH = "./source/trained_net/"
         self.MODEL = 'MiracleWeightWideNet'
         self.NUM_CHANNEL = 2
-        self.PROCESS_ID = 'PADDING_LOSS1-2_WEI4-2-1-1-NEW_GEN'
+        self.PROCESS_ID = 'PADDING_LOSS1-2_WEI4-2-1-1-NEW_GEN-Interval'
         self.LINER_HID_SIZE = 1024
         self.LENGTH = 41
         self.WIDTH = 9
@@ -76,7 +76,7 @@ def dl_init():
     else:
         print("==> Model initialized successfully.")
     net_save_prefix = opt.NET_SAVE_PATH + opt.MODEL + '_' + opt.PROCESS_ID + '/'
-    temp_model_name = net_save_prefix + "temp_model.dat"
+    temp_model_name = net_save_prefix + "best_model.dat"
     if os.path.exists(temp_model_name):
         net, *_ = net.load(temp_model_name)
         print("Load existing model: %s" % temp_model_name)
@@ -84,7 +84,7 @@ def dl_init():
             net.cuda()
             print("==> Using CUDA.")
     else:
-        FileNotFoundError()
+        raise FileNotFoundError()
     return opt, net
 
 

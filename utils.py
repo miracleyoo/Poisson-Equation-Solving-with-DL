@@ -26,7 +26,7 @@ def load_data(opt, root='./Datasets/'):
 
     """
     if opt.USE_NEW_DATA:
-        DATA_PATH = [root + 'v2_train_data_2.pkl', root + 'v2_test_data_2.pkl']
+        DATA_PATH = [root + 'v2_train_data.pkl', root + 'v2_test_data.pkl']
         train_pairs = pickle.load(open(DATA_PATH[0], 'rb'))
         test_pairs = pickle.load(open(DATA_PATH[1], 'rb'))
         print("==> Load train data successfully.")
