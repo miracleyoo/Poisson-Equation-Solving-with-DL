@@ -6,7 +6,7 @@ from numpy import dot as ndot
 from copy import copy
 from numpy import cos, sin, pi
 
-
+# test 10082018
 def dot(A, B):
     if type(A) == float or type(B) == float:
         return A * B
