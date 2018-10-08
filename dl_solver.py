@@ -52,7 +52,7 @@ class Config(object):
         self.NET_SAVE_PATH = "./source/trained_net/"
         self.MODEL = 'MiracleWeightWideNet'
         self.NUM_CHANNEL = 2
-        self.PROCESS_ID = 'PADDING_LOSS1-2_WEI4-2-1-1-NEW_GEN-Interval'
+        self.PROCESS_ID = 'PADDING_LOSS1-2_WEI4-2-1-1-For-Paper'
         self.LINER_HID_SIZE = 1024
         self.LENGTH = 41
         self.WIDTH = 9
